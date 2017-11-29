@@ -1,0 +1,7 @@
+de\novatecgmbh\camunda\bpm\prototype\OptArtifactsCreateDelegate.class
+de\novatecgmbh\camunda\bpm\prototype\OptArtifactsCloseDelegate.class
+de\novatecgmbh\camunda\bpm\prototype\ProcessApplication.class
+de\novatecgmbh\camunda\bpm\prototype\RestProcessEngineProvider.class
+de\novatecgmbh\camunda\bpm\prototype\GitDelegate.class
+de\novatecgmbh\camunda\bpm\prototype\GitCloseDelegate.class
+de\novatecgmbh\camunda\bpm\prototype\NotificationDelegate.class
