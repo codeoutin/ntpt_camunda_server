@@ -1,7 +1,10 @@
-C:\Users\PSE\ownCloud\eclipse_workspace\springboot-offline-example-task\src\main\java\de\novatecgmbh\camunda\bpm\prototype\GitCloseDelegate.java
-C:\Users\PSE\ownCloud\eclipse_workspace\springboot-offline-example-task\src\main\java\de\novatecgmbh\camunda\bpm\prototype\OptArtifactsCloseDelegate.java
-C:\Users\PSE\ownCloud\eclipse_workspace\springboot-offline-example-task\src\main\java\de\novatecgmbh\camunda\bpm\prototype\OptArtifactsCreateDelegate.java
-C:\Users\PSE\ownCloud\eclipse_workspace\springboot-offline-example-task\src\main\java\de\novatecgmbh\camunda\bpm\prototype\RestProcessEngineProvider.java
-C:\Users\PSE\ownCloud\eclipse_workspace\springboot-offline-example-task\src\main\java\de\novatecgmbh\camunda\bpm\prototype\GitDelegate.java
-C:\Users\PSE\ownCloud\eclipse_workspace\springboot-offline-example-task\src\main\java\de\novatecgmbh\camunda\bpm\prototype\NotificationDelegate.java
-C:\Users\PSE\ownCloud\eclipse_workspace\springboot-offline-example-task\src\main\java\de\novatecgmbh\camunda\bpm\prototype\ProcessApplication.java
+/Users/patrick/IdeaProjects/nt_pt_server/src/main/java/de/novatecgmbh/camunda/bpm/prototype/camunda/ProcessApplication.java
+/Users/patrick/IdeaProjects/nt_pt_server/src/main/java/de/novatecgmbh/camunda/bpm/prototype/camunda/DataController.java
+/Users/patrick/IdeaProjects/nt_pt_server/src/main/java/de/novatecgmbh/camunda/bpm/prototype/camunda/OptArtifactsCreateDelegate.java
+/Users/patrick/IdeaProjects/nt_pt_server/src/main/java/de/novatecgmbh/camunda/bpm/prototype/camunda/GitCloseDelegate.java
+/Users/patrick/IdeaProjects/nt_pt_server/src/main/java/de/novatecgmbh/camunda/bpm/prototype/camunda/ServerRepo.java
+/Users/patrick/IdeaProjects/nt_pt_server/src/main/java/de/novatecgmbh/camunda/bpm/prototype/camunda/NotificationDelegate.java
+/Users/patrick/IdeaProjects/nt_pt_server/src/main/java/de/novatecgmbh/camunda/bpm/prototype/camunda/OptArtifactsCloseDelegate.java
+/Users/patrick/IdeaProjects/nt_pt_server/src/main/java/de/novatecgmbh/camunda/bpm/prototype/camunda/GitDelegate.java
+/Users/patrick/IdeaProjects/nt_pt_server/src/main/java/de/novatecgmbh/camunda/bpm/prototype/camunda/Server.java
+/Users/patrick/IdeaProjects/nt_pt_server/src/main/java/de/novatecgmbh/camunda/bpm/prototype/camunda/RestProcessEngineProvider.java
