@@ -12,4 +12,4 @@ The Server is written in SpringBoot and includes the Camunda Engine with BPMN an
 Method|HTTP Request|Description
 ---|---|---
 GET|/hello|Hello World Test
-GET|/server/`{name}`|Gets the current servers adress
+GET|/server/`{server}`|Gets the current servers adress
