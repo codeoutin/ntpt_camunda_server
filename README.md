@@ -1,5 +1,5 @@
-# nt_pt_server
-Prototype Camunda Server. Includes the process, process-engine and a dmn.
+# NovaTec Prototype Server
+Prototype Camunda Server. Includes the process, process-engine, a dmn and a Rest Interface.
 
 ## Usage
 1. Run the exported jar file `java -jar target/springboot-offline-example-task-0.0.1-SNAPSHOT`
