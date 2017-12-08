@@ -13,19 +13,28 @@
         <inputExpression id="LiteralExpression_03pvmr5" typeRef="string">        <text>schemaType</text>
 </inputExpression>
       </input>
+      <input id="InputClause_11gm8p8" label="TestEnvironment">
+        <inputExpression id="LiteralExpression_0q423tu" typeRef="boolean" />
+      </input>
       <output id="output1" label="Jobs" name="dmn_output" typeRef="string" />
       <rule id="row-654214957-1">
+        <description>Create official Release</description>
         <inputEntry id="UnaryTests_0o9buyk">        <text><![CDATA["RELEASE", "HOTFIX"]]></text>
 </inputEntry>
         <inputEntry id="UnaryTests_1afw6i4">        <text></text>
+</inputEntry>
+        <inputEntry id="UnaryTests_1o8w2vd">        <text></text>
 </inputEntry>
         <outputEntry id="LiteralExpression_0fm47hn">        <text><![CDATA["RELEASE"]]></text>
 </outputEntry>
       </rule>
       <rule id="row-654214957-2">
+        <description>Continuous Integration</description>
         <inputEntry id="UnaryTests_0d3wp40">        <text><![CDATA["HOTFIX", "FEATURE", "RELEASE"]]></text>
 </inputEntry>
         <inputEntry id="UnaryTests_1bka95z">        <text></text>
+</inputEntry>
+        <inputEntry id="UnaryTests_1gdxjda">        <text></text>
 </inputEntry>
         <outputEntry id="LiteralExpression_1mbmtfy">        <text><![CDATA["CI"]]></text>
 </outputEntry>
@@ -36,43 +45,31 @@
 </inputEntry>
         <inputEntry id="UnaryTests_0mhuzn9">        <text></text>
 </inputEntry>
+        <inputEntry id="UnaryTests_0ia84e2">        <text></text>
+</inputEntry>
         <outputEntry id="LiteralExpression_00ri1rc">        <text><![CDATA["SONAR"]]></text>
 </outputEntry>
       </rule>
       <rule id="row-654214957-4">
         <description>Import data job</description>
-        <inputEntry id="UnaryTests_140z9pc">        <text><![CDATA["RELEASE"]]></text>
+        <inputEntry id="UnaryTests_140z9pc">        <text><![CDATA["RELEASE", "HOTFIX", "FEATURE"]]></text>
 </inputEntry>
-        <inputEntry id="UnaryTests_1tejca5">        <text><![CDATA["ALL", "RUNTIME", "UNITTEST"]]></text>
+        <inputEntry id="UnaryTests_1tejca5">        <text><![CDATA["UNITTEST"]]></text>
 </inputEntry>
-        <outputEntry id="LiteralExpression_16e6vfn">        <text><![CDATA["IMPORT_SQL"]]></text>
-</outputEntry>
-      </rule>
-      <rule id="row-654214957-5">
-        <description>Execute SQL job</description>
-        <inputEntry id="UnaryTests_0jjww8n">        <text><![CDATA["RELEASE"]]></text>
+        <inputEntry id="UnaryTests_1m4losp">        <text></text>
 </inputEntry>
-        <inputEntry id="UnaryTests_16palhn">        <text><![CDATA["ALL", "RUNTIME", "UNITTEST"]]></text>
-</inputEntry>
-        <outputEntry id="LiteralExpression_0cchpxh">        <text><![CDATA["EXECTURE_SQL"]]></text>
+        <outputEntry id="LiteralExpression_16e6vfn">        <text><![CDATA["IMPORT"]]></text>
 </outputEntry>
       </rule>
       <rule id="row-654214957-6">
-        <description>Test deployment after CI</description>
-        <inputEntry id="UnaryTests_0k9kzkx">        <text><![CDATA["RELEASE", "HOLIDAYS"]]></text>
+        <description>Test Deployment</description>
+        <inputEntry id="UnaryTests_0k9kzkx">        <text><![CDATA["RELEASE"]]></text>
 </inputEntry>
         <inputEntry id="UnaryTests_0fe6ilz">        <text></text>
 </inputEntry>
+        <inputEntry id="UnaryTests_1lc0sj7">        <text>true</text>
+</inputEntry>
         <outputEntry id="LiteralExpression_0rsr6x1">        <text><![CDATA["DEPLOY"]]></text>
-</outputEntry>
-      </rule>
-      <rule id="row-654214957-7">
-        <description>Manual Close Call</description>
-        <inputEntry id="UnaryTests_1guutao">        <text><![CDATA["HOTFIX", "FEATURE"]]></text>
-</inputEntry>
-        <inputEntry id="UnaryTests_1mpncr7">        <text></text>
-</inputEntry>
-        <outputEntry id="LiteralExpression_1ijq0hc">        <text><![CDATA["CLOSE"]]></text>
 </outputEntry>
       </rule>
     </decisionTable>
