@@ -1,5 +1,7 @@
 package de.novatecgmbh.camunda.bpm.prototype.camunda.delegates.create_operations;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Service;
@@ -12,15 +14,27 @@ import java.net.URL;
 public class TestEnvCreateDelegate implements JavaDelegate {
 
     public void execute(DelegateExecution execution) throws Exception {
-        String branch_name = (String) execution.getVariable("branch_name");
-        String gitProjectId = (String) execution.getVariable("git_project");
-        // ^ to create the prefix
+        String prefix = execution.getVariable("git_project")
+                + "_"
+                + execution.getVariable("git_branch_name");
 
-        // Überlegung: Ordner auf Netzlaufwerk oder Dummy Test
+        if ((Boolean) execution.getVariable("test_environment")) {
+            try {
+                // Überlegung: Ordner auf Netzlaufwerk oder Dummy Test
 
-        System.out.println("\n######\n");
-        System.out.println("NOW WE WOULD CREATE A TEST ENV");
-        System.out.println("\n######\n");
+                execution.setVariable("test_environment_created", true);
+                System.out.println("\n######\n");
+                System.out.println("NOW WE WOULD CREATE A TEST ENV");
+                System.out.println("\n######\n");
+            } catch (Exception e) {
+                execution.setVariable("test_environment_created", false);
+                execution.setVariable("sonarqube_created", false);
+                System.out.println("Error while creating a Test Environment. Task cancelled.");
+                throw new BpmnError("CreateError");
+            }
+        } else {
+            execution.setVariable("test_environment_created", false);
+        }
     }
 
 }

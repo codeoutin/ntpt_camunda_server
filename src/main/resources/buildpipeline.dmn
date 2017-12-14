@@ -5,16 +5,17 @@
       <biodi:bounds x="200" y="200" width="180" height="80" />
     </extensionElements>
     <decisionTable id="decisionTable" hitPolicy="COLLECT">
-      <input id="input1" label="BranchType" camunda:inputVariable="branchType">
-        <inputExpression id="inputExpression1" typeRef="string">        <text>branchType</text>
+      <input id="input1" label="Branch Type" camunda:inputVariable="bp_branch_type">
+        <inputExpression id="inputExpression1" typeRef="string">        <text>bp_branch_type</text>
 </inputExpression>
       </input>
-      <input id="InputClause_05imyv8" label="SchemaType" camunda:inputVariable="schemaType">
-        <inputExpression id="LiteralExpression_03pvmr5" typeRef="string">        <text>schemaType</text>
+      <input id="InputClause_05imyv8" label="Schema Type" camunda:inputVariable="bp_schema_type">
+        <inputExpression id="LiteralExpression_03pvmr5" typeRef="string">        <text>bp_schema_type</text>
 </inputExpression>
       </input>
-      <input id="InputClause_11gm8p8" label="TestEnvironment">
-        <inputExpression id="LiteralExpression_0q423tu" typeRef="boolean" />
+      <input id="InputClause_11gm8p8" label="Test Environment" camunda:inputVariable="test_environment">
+        <inputExpression id="LiteralExpression_0q423tu" typeRef="boolean">        <text>test_environment</text>
+</inputExpression>
       </input>
       <output id="output1" label="Jobs" name="dmn_output" typeRef="string" />
       <rule id="row-654214957-1">

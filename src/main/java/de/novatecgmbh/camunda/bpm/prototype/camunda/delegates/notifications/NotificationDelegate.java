@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service("NotificationAdapter")
 public class NotificationDelegate implements JavaDelegate {
     public void execute(DelegateExecution execution) throws Exception {
-        String additionalArtifactsDesc = (String) execution.getVariable("additionalArtifactsDesc");
+        String additionalArtifactsDesc = (String) execution.getVariable("additional_artifacts_text");
 
         //System.out.println(">> current id: " + execution.getCurrentActivityId());
 

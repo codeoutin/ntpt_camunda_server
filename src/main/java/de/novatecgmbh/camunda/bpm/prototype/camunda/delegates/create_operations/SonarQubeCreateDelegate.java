@@ -1,5 +1,6 @@
 package de.novatecgmbh.camunda.bpm.prototype.camunda.delegates.create_operations;
 
+import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Service;
@@ -12,21 +13,28 @@ import java.net.URL;
 public class SonarQubeCreateDelegate implements JavaDelegate {
 
     public void execute(DelegateExecution execution) throws Exception {
-        String branch_name = (String) execution.getVariable("branch_name");
-        String gitProjectId = (String) execution.getVariable("git_project");
-        // ^ to create the prefix
+        String prefix = execution.getVariable("git_project")
+                + "_"
+                + execution.getVariable("git_branch_name");
 
-        String sqUrl = (String) execution.getVariable("sq_url");
-        String sqUser = (String) execution.getVariable("sq_user");
-        String sqPw = (String) execution.getVariable("sq_pw");
-        String sqProfile = (String) execution.getVariable("sq_profile");
+        String sqUrl = "http://" + execution.getVariable("sonarqube_url");
+        //String sqUser = (String) execution.getVariable("sq_user");
+        //String sqPw = (String) execution.getVariable("sq_pw");
+        String sqProfile = (String) execution.getVariable("sonarqube_profile");
 
-        //InputStream response = new URL(url).openStream();
+        if(sqProfile != "no" && sqUrl != null) {
+            try {
 
-        System.out.println("\n######\n");
-        System.out.println("NOW WE WOULD CREATE A GIT BRANCH");
-        //System.out.println(response);
-        System.out.println("\n######\n");
+
+                execution.setVariable("sonarqube_created", true);
+                System.out.println("\n######\n");
+                System.out.println("NOW WE WOULD CREATE A SQ GATE WITH THE PROFILE: " + sqProfile);
+                System.out.println("\n######\n");
+            } catch (Exception e) {
+                execution.setVariable("sonarqube_created", false);
+                System.out.println("Error while at SonarQube Task. Other Tasks cancelled.");
+                throw new BpmnError("CreateError");
+            }
+        }
     }
-
 }
