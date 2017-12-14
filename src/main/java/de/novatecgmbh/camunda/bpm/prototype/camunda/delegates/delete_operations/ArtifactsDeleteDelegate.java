@@ -22,9 +22,7 @@ public class ArtifactsDeleteDelegate implements JavaDelegate {
 
 
         // Create Prefix
-        String prefix = execution.getVariable("git_project")
-                + "_"
-                + execution.getVariable("git_branch_name");
+        String prefix = (String) execution.getVariable("prefix");
 
         // Destroy Database
         if (dbCreated && dbCreated != null) {

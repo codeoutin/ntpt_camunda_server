@@ -14,9 +14,7 @@ import java.util.List;
 public class BuildpipelineCreateDelegate implements JavaDelegate {
 
     public void execute(DelegateExecution execution) throws Exception {
-        String prefix = execution.getVariable("git_project")
-                + "_"
-                + execution.getVariable("git_branch_name");
+        String prefix = (String) execution.getVariable("prefix");
 
         String jenkinsUrl = (String) execution.getVariable("bp_url");
         if (jenkinsUrl != null) {

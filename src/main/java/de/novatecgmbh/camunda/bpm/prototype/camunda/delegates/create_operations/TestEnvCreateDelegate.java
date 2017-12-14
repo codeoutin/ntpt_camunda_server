@@ -14,9 +14,7 @@ import java.net.URL;
 public class TestEnvCreateDelegate implements JavaDelegate {
 
     public void execute(DelegateExecution execution) throws Exception {
-        String prefix = execution.getVariable("git_project")
-                + "_"
-                + execution.getVariable("git_branch_name");
+        String prefix = (String) execution.getVariable("prefix");
 
         if ((Boolean) execution.getVariable("test_environment")) {
             try {

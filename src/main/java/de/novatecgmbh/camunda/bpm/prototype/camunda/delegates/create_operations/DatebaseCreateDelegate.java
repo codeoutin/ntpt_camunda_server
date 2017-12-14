@@ -17,9 +17,7 @@ import java.util.regex.Pattern;
 public class DatebaseCreateDelegate implements JavaDelegate {
 
     public void execute(DelegateExecution execution) throws Exception {
-        String prefix = execution.getVariable("git_project")
-                + "_"
-                + execution.getVariable("git_branch_name");
+        String prefix = (String) execution.getVariable("prefix");
 
         String dbUrl = (String) execution.getVariable("db_url");
 

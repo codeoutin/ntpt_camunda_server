@@ -13,9 +13,7 @@ import java.net.URL;
 public class SonarQubeCreateDelegate implements JavaDelegate {
 
     public void execute(DelegateExecution execution) throws Exception {
-        String prefix = execution.getVariable("git_project")
-                + "_"
-                + execution.getVariable("git_branch_name");
+        String prefix = (String) execution.getVariable("prefix");
 
         String sqUrl = "http://" + execution.getVariable("sonarqube_url");
         //String sqUser = (String) execution.getVariable("sq_user");
