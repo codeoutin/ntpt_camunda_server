@@ -27,28 +27,4 @@ public class DataController {
     public String returnHelloWorld() {
         return "{\"status\":\"up\"}";
     }
-
-    //Return the address of a server stored in properties file
-    @RequestMapping("/server/{server}")
-    @JsonValue
-    public String getServerAddress(@PathVariable("server") String server) {
-        try {
-            PropertiesConfiguration conf = new PropertiesConfiguration("server.properties");
-            return (String) conf.getProperty(server);
-        } catch (ConfigurationException e) {
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
-
-    class KeyValue {
-        private String key;
-        private String value;
-
-        KeyValue(String key, String value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
-
 }
