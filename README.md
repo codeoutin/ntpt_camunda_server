@@ -16,6 +16,7 @@ GET|/server/`{server}`|Gets the current servers adress
 
 ### Camunda Rest Api
 You have full access to [Camundas Rest API](https://docs.camunda.org/manual/latest/reference/rest/). 
+
 Method|HTTP Request|Description
 ---|---|---
-GET|/rest/*|No Authentication required
+GET|/rest/|No Authentication required
