@@ -12,4 +12,11 @@ The Server is written in SpringBoot and includes the Camunda Engine with BPMN an
 Method|HTTP Request|Description
 ---|---|---
 GET|/hello|Hello World Test
-GET|/server/`{server}`|Gets the current servers adress
+GET|/status|Return `up` when server is running
+
+### Camunda Rest Api
+You have full access to [Camundas Rest API](https://docs.camunda.org/manual/latest/reference/rest/). 
+
+Method|HTTP Request|Description
+---|---|---
+GET|/rest/|No Authentication required
