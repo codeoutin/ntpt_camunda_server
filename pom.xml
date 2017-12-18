@@ -106,6 +106,14 @@
             <version>2.9.2</version>
         </dependency>
 
+        <!--Apache HTTPClient for posting xml-->
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+        </dependency>
+
+
 
     </dependencies>
 

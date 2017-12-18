@@ -18,7 +18,13 @@ public class BranchDeleteDelegate implements JavaDelegate {
         String gitToken = (String) execution.getVariable("git_token");
         String gitProjectId = (String) execution.getVariable("git_project");
 
-        if ((Boolean) execution.getVariable("git_branch_created")) {
+        boolean gitBranchCreated;
+        if (execution.getVariable("git_branch_created") == null)
+            gitBranchCreated = false;
+        else
+            gitBranchCreated = (boolean) execution.getVariable("git_branch_created");
+
+        if (gitBranchCreated) {
             String DeleteBranchUrl = gitUrl
                     + "/api/v4/projects/"
                     + gitProjectId
@@ -30,6 +36,7 @@ public class BranchDeleteDelegate implements JavaDelegate {
             c.setRequestProperty("PRIVATE-TOKEN", gitToken);
 
             System.out.println("Git Delete Branch Message: " + c.getResponseMessage());
+            execution.setVariable("git_branch_created", false);
         } else {
             System.out.println("Could not delete Branch, please contact an Administrator");
         }

@@ -4,10 +4,9 @@
   <bpmn:message id="Message_14tkjld" name="askDevForRollback" />
   <bpmn:collaboration id="BuildPipelinePrototype">
     <bpmn:participant id="Participant_1r5cdsp" name="Prototype" processRef="TestBuildPipeline" />
-    <bpmn:participant id="Participant_13s15y7" name="Sys-Admin" processRef="Process_1mzgkmq" />
-    <bpmn:messageFlow id="MessageFlow_07oezh1" sourceRef="CloseExtraArtifactsNotification" targetRef="StartEvent_0rw2qwd" />
+    <bpmn:participant id="Participant_13s15y7" name="Sys-Admin" processRef="ManualArtifacts" />
     <bpmn:messageFlow id="MessageFlow_0hhl7g4" sourceRef="RequestArtifactsNotification" targetRef="StartEvent_1bbqpnl" />
-    <bpmn:messageFlow id="MessageFlow_19sxiu7" sourceRef="CreateArtifacts" targetRef="CreateArtifactsSub" />
+    <bpmn:messageFlow id="MessageFlow_11m29or" sourceRef="CloseExtraArtifactsNotification" targetRef="StartEvent_0rw2qwd" />
   </bpmn:collaboration>
   <bpmn:process id="TestBuildPipeline" isExecutable="true">
     <bpmn:laneSet>
@@ -21,20 +20,22 @@
         <bpmn:flowNodeRef>SubProcess_0qmg2un</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ResetReminderTimer</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ExclusiveGateway_0baxbmd</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>ExclusiveGateway_1awjq12</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_0rdh4sd</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CreateArtifactsSub</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>BoundaryEvent_03tjt4f</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>CloseExtraArtifactsNotification</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CatchException</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>RequestArtifactsNotification</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CloseTimerNotification</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CloseExtraArtifactsNotification</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ExclusiveGateway_1awjq12</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:sequenceFlow id="SequenceFlow_0gkzt8k" sourceRef="BoundaryEvent_03tjt4f" targetRef="CatchException" />
-    <bpmn:sequenceFlow id="SequenceFlow_0s727dx" name="no" sourceRef="ExclusiveGateway_027tl96" targetRef="CreateArtifactsSub" />
+    <bpmn:sequenceFlow id="SequenceFlow_0s727dx" name="no" sourceRef="ExclusiveGateway_027tl96" targetRef="CreateArtifactsSub">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_0r0c3wh" sourceRef="StartEvent_1" targetRef="ExclusiveGateway_027tl96" />
-    <bpmn:inclusiveGateway id="ExclusiveGateway_027tl96" name="Create Additional Artifacts?" default="SequenceFlow_0s727dx">
+    <bpmn:inclusiveGateway id="ExclusiveGateway_027tl96" name="Create Additional Artifacts?">
       <bpmn:incoming>SequenceFlow_0r0c3wh</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0s727dx</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_1v1jps9</bpmn:outgoing>
@@ -106,11 +107,11 @@
         <bpmn:outgoing>SequenceFlow_1j9p106</bpmn:outgoing>
       </bpmn:serviceTask>
     </bpmn:subProcess>
-    <bpmn:intermediateCatchEvent id="ResetReminderTimer" name="Dos Minutos">
+    <bpmn:intermediateCatchEvent id="ResetReminderTimer" name="40 Seconds">
       <bpmn:incoming>SequenceFlow_0qg3kac</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0s310sz</bpmn:outgoing>
       <bpmn:timerEventDefinition>
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT01M</bpmn:timeDuration>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT10S</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:intermediateCatchEvent>
     <bpmn:inclusiveGateway id="ExclusiveGateway_0baxbmd">
@@ -118,11 +119,6 @@
       <bpmn:incoming>SequenceFlow_16dfpuy</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0qg3kac</bpmn:outgoing>
     </bpmn:inclusiveGateway>
-    <bpmn:exclusiveGateway id="ExclusiveGateway_1awjq12" name="Additional Artifacts existing?" default="SequenceFlow_0pklypy">
-      <bpmn:incoming>SequenceFlow_1p012cp</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_0pklypy</bpmn:outgoing>
-      <bpmn:outgoing>SequenceFlow_1f9rb5p</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
     <bpmn:subProcess id="SubProcess_0qmg2un" name="Reset Artifacts">
       <bpmn:incoming>SequenceFlow_01f98gq</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_01fuk9x</bpmn:incoming>
@@ -172,9 +168,8 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!deleteArtifacts}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_1p012cp" sourceRef="SubProcess_0qmg2un" targetRef="ExclusiveGateway_1awjq12" />
-    <bpmn:sequenceFlow id="SequenceFlow_0pklypy" name="no" sourceRef="ExclusiveGateway_1awjq12" targetRef="EndEvent_0rdh4sd" />
-    <bpmn:sequenceFlow id="SequenceFlow_1f9rb5p" name="yes" sourceRef="ExclusiveGateway_1awjq12" targetRef="CloseExtraArtifactsNotification">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${additional_artifacts}</bpmn:conditionExpression>
+    <bpmn:sequenceFlow id="SequenceFlow_0pklypy" name="no" sourceRef="ExclusiveGateway_1awjq12" targetRef="EndEvent_0rdh4sd">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${true}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_01f98gq" name="close" sourceRef="ExclusiveGateway_15cjtzi" targetRef="SubProcess_0qmg2un">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${deleteArtifacts}</bpmn:conditionExpression>
@@ -186,9 +181,6 @@
       <bpmn:errorEventDefinition errorRef="Error_1n1rfed" />
     </bpmn:boundaryEvent>
     <bpmn:sequenceFlow id="SequenceFlow_16dfpuy" sourceRef="CreateArtifactsSub" targetRef="ExclusiveGateway_0baxbmd" />
-    <bpmn:sendTask id="CloseExtraArtifactsNotification" name="Notify Admin" camunda:delegateExpression="#{NotificationAdapter}">
-      <bpmn:incoming>SequenceFlow_1f9rb5p</bpmn:incoming>
-    </bpmn:sendTask>
     <bpmn:sequenceFlow id="SequenceFlow_1v1jps9" name="yes" sourceRef="ExclusiveGateway_027tl96" targetRef="RequestArtifactsNotification">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${additional_artifacts}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -198,38 +190,56 @@
     </bpmn:sendTask>
     <bpmn:intermediateThrowEvent id="RequestArtifactsNotification">
       <bpmn:incoming>SequenceFlow_1v1jps9</bpmn:incoming>
-      <bpmn:messageEventDefinition messageRef="Message_0i6lgzc" camunda:delegateExpression="#{NotificationAdapter}" />
+      <bpmn:messageEventDefinition camunda:delegateExpression="#{NotificationAdapter}" />
     </bpmn:intermediateThrowEvent>
     <bpmn:sendTask id="CloseTimerNotification" name="Send Reminder Notification" camunda:delegateExpression="#{NotificationAdapter}">
       <bpmn:incoming>SequenceFlow_0s310sz</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1eqzlvv</bpmn:outgoing>
     </bpmn:sendTask>
+    <bpmn:intermediateThrowEvent id="CloseExtraArtifactsNotification">
+      <bpmn:incoming>SequenceFlow_08phy8x</bpmn:incoming>
+      <bpmn:messageEventDefinition camunda:delegateExpression="#{NotificationAdapter}" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_08phy8x" name="yes" sourceRef="ExclusiveGateway_1awjq12" targetRef="CloseExtraArtifactsNotification">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${additional_artifacts}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:inclusiveGateway id="ExclusiveGateway_1awjq12" name="Additional Artifacts existing?">
+      <bpmn:incoming>SequenceFlow_1p012cp</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0pklypy</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_08phy8x</bpmn:outgoing>
+    </bpmn:inclusiveGateway>
   </bpmn:process>
-  <bpmn:process id="Process_1mzgkmq" isExecutable="false">
+  <bpmn:process id="ManualArtifacts" isExecutable="true">
+    <bpmn:sequenceFlow id="SequenceFlow_0eapk15" sourceRef="CreateArtifacts" targetRef="EndEvent_16j2bda" />
     <bpmn:sequenceFlow id="SequenceFlow_0wc8lwk" sourceRef="StartEvent_1bbqpnl" targetRef="CreateArtifacts" />
-    <bpmn:userTask id="CloseExtraArtifacts" name="Close Artifacts manually" camunda:candidateGroups="sysadmin">
-      <bpmn:incoming>SequenceFlow_169km13</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_05z3xmb</bpmn:outgoing>
-    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_05z3xmb" sourceRef="CloseExtraArtifacts" targetRef="EndEvent_1d2fzwb" />
+    <bpmn:sequenceFlow id="SequenceFlow_169km13" sourceRef="StartEvent_0rw2qwd" targetRef="CloseExtraArtifacts" />
     <bpmn:startEvent id="StartEvent_0rw2qwd">
       <bpmn:outgoing>SequenceFlow_169km13</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_0gee84e" />
     </bpmn:startEvent>
+    <bpmn:endEvent id="EndEvent_16j2bda">
+      <bpmn:incoming>SequenceFlow_0eapk15</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:startEvent id="StartEvent_1bbqpnl" name="Request received">
+      <bpmn:outgoing>SequenceFlow_0wc8lwk</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_1hyqv5q" />
+    </bpmn:startEvent>
+    <bpmn:userTask id="CreateArtifacts" name="Create Artifacts manually" camunda:candidateGroups="sysadmin">
+      <bpmn:incoming>SequenceFlow_0wc8lwk</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0eapk15</bpmn:outgoing>
+    </bpmn:userTask>
     <bpmn:endEvent id="EndEvent_1d2fzwb" name="All Artifacts closed">
       <bpmn:incoming>SequenceFlow_05z3xmb</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_169km13" sourceRef="StartEvent_0rw2qwd" targetRef="CloseExtraArtifacts" />
-    <bpmn:sequenceFlow id="SequenceFlow_05z3xmb" sourceRef="CloseExtraArtifacts" targetRef="EndEvent_1d2fzwb" />
-    <bpmn:userTask id="CreateArtifacts" name="Create Artifacts manually" camunda:candidateGroups="sysadmin">
-      <bpmn:incoming>SequenceFlow_0wc8lwk</bpmn:incoming>
+    <bpmn:userTask id="CloseExtraArtifacts" name="Close Artifacts manually" camunda:candidateGroups="sysadmin">
+      <bpmn:incoming>SequenceFlow_169km13</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_05z3xmb</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:startEvent id="StartEvent_1bbqpnl" name="Request received">
-      <bpmn:outgoing>SequenceFlow_0wc8lwk</bpmn:outgoing>
-      <bpmn:messageEventDefinition messageRef="Message_0i6lgzc" />
-    </bpmn:startEvent>
   </bpmn:process>
-  <bpmn:message id="Message_0i6lgzc" name="notifyAdminToCreateArtifacts" />
+  <bpmn:message id="Message_0i6lgzc" />
   <bpmn:message id="Message_0gee84e" name="notifyAdminToDeleteArtifacts" />
+  <bpmn:message id="Message_1hyqv5q" name="notifyAdminToCreateArtifacts" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="BuildPipelinePrototype">
       <bpmndi:BPMNShape id="ServiceTask_1hig6hk_di" bpmnElement="CreateBranch">
@@ -279,7 +289,7 @@
       <bpmndi:BPMNShape id="IntermediateCatchEvent_1jogte1_di" bpmnElement="ResetReminderTimer">
         <dc:Bounds x="1657" y="462" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1705" y="474" width="61" height="12" />
+          <dc:Bounds x="1707" y="474" width="58" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
@@ -398,25 +408,16 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="StartEvent_1wzr7ge_di" bpmnElement="StartEvent_0rw2qwd">
-        <dc:Bounds x="2450" y="957" width="36" height="36" />
+        <dc:Bounds x="2446" y="957" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2250" y="997" width="90" height="12" />
+          <dc:Bounds x="2246" y="997" width="90" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="MessageFlow_07oezh1_di" bpmnElement="MessageFlow_07oezh1">
-        <di:waypoint xsi:type="dc:Point" x="2464" y="760" />
-        <di:waypoint xsi:type="dc:Point" x="2464" y="859" />
-        <di:waypoint xsi:type="dc:Point" x="2465" y="859" />
-        <di:waypoint xsi:type="dc:Point" x="2465" y="958" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2419.5" y="838" width="90" height="12" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_169km13_di" bpmnElement="SequenceFlow_169km13">
-        <di:waypoint xsi:type="dc:Point" x="2486" y="975" />
+        <di:waypoint xsi:type="dc:Point" x="2482" y="975" />
         <di:waypoint xsi:type="dc:Point" x="2529" y="975" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2463" y="954" width="90" height="12" />
+          <dc:Bounds x="2460.5" y="954" width="90" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="EndEvent_1d2fzwb_di" bpmnElement="EndEvent_1d2fzwb">
@@ -452,24 +453,11 @@
           <dc:Bounds x="1706" y="655.5" width="90" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ExclusiveGateway_1awjq12_di" bpmnElement="ExclusiveGateway_1awjq12" isMarkerVisible="true">
-        <dc:Bounds x="2439" y="533" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2420" y="487" width="87" height="24" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0pklypy_di" bpmnElement="SequenceFlow_0pklypy">
         <di:waypoint xsi:type="dc:Point" x="2489" y="558" />
         <di:waypoint xsi:type="dc:Point" x="2672" y="558" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="2576" y="537" width="12" height="12" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_1f9rb5p_di" bpmnElement="SequenceFlow_1f9rb5p">
-        <di:waypoint xsi:type="dc:Point" x="2464" y="583" />
-        <di:waypoint xsi:type="dc:Point" x="2464" y="680" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2470" y="626.0000000000002" width="19" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1p012cp_di" bpmnElement="SequenceFlow_1p012cp">
@@ -588,9 +576,6 @@
           <dc:Bounds x="1515.5" y="537" width="0" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="SendTask_0xbp0y0_di" bpmnElement="CloseExtraArtifactsNotification">
-        <dc:Bounds x="2414" y="680" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1v1jps9_di" bpmnElement="SequenceFlow_1v1jps9">
         <di:waypoint xsi:type="dc:Point" x="421" y="199" />
         <di:waypoint xsi:type="dc:Point" x="421" y="567" />
@@ -609,21 +594,55 @@
         <di:waypoint xsi:type="dc:Point" x="421" y="738" />
         <di:waypoint xsi:type="dc:Point" x="421" y="957" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="436" y="841.5" width="0" height="12" />
+          <dc:Bounds x="391" y="842" width="90" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="SendTask_0yv5207_di" bpmnElement="CatchException">
         <dc:Bounds x="1388" y="680" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="MessageFlow_19sxiu7_di" bpmnElement="MessageFlow_19sxiu7">
-        <di:waypoint xsi:type="dc:Point" x="565" y="935" />
-        <di:waypoint xsi:type="dc:Point" x="565" y="651" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="580" y="787" width="0" height="12" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="SendTask_0tzgfz8_di" bpmnElement="CloseTimerNotification">
         <dc:Bounds x="1625" y="323" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_16j2bda_di" bpmnElement="EndEvent_16j2bda">
+        <dc:Bounds x="662" y="957" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="680" y="997" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0eapk15_di" bpmnElement="SequenceFlow_0eapk15">
+        <di:waypoint xsi:type="dc:Point" x="615" y="975" />
+        <di:waypoint xsi:type="dc:Point" x="662" y="975" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="638.5" y="954" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="IntermediateThrowEvent_09961ib_di" bpmnElement="CloseExtraArtifactsNotification">
+        <dc:Bounds x="2446" y="679" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2464" y="718.7524950099801" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_08phy8x_di" bpmnElement="SequenceFlow_08phy8x">
+        <di:waypoint xsi:type="dc:Point" x="2464" y="583" />
+        <di:waypoint xsi:type="dc:Point" x="2464" y="679" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2470" y="625" width="19" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_11m29or_di" bpmnElement="MessageFlow_11m29or">
+        <di:waypoint xsi:type="dc:Point" x="2464" y="715" />
+        <di:waypoint xsi:type="dc:Point" x="2464" y="836" />
+        <di:waypoint xsi:type="dc:Point" x="2465" y="836" />
+        <di:waypoint xsi:type="dc:Point" x="2465" y="957" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2464.5" y="815" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="InclusiveGateway_1ny8k4t_di" bpmnElement="ExclusiveGateway_1awjq12">
+        <dc:Bounds x="2439" y="533" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2420" y="487" width="87" height="24" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

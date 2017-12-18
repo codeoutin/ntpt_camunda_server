@@ -1,18 +1,25 @@
 package de.novatecgmbh.camunda.bpm.prototype.camunda.delegates.notifications;
 
+import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 @Service("NotificationAdapter")
 public class NotificationDelegate implements JavaDelegate {
+
+    @Autowired
+    RuntimeService service;
+
     public void execute(DelegateExecution execution) throws Exception {
         String additionalArtifactsDesc = (String) execution.getVariable("additional_artifacts_text");
 
         //System.out.println(">> current id: " + execution.getCurrentActivityId());
 
         if (execution.getCurrentActivityId().equals("RequestArtifactsNotification")) {
+            service.startProcessInstanceByMessage("notifyAdminToCreateArtifacts", execution.getVariables());
             System.out.println("\n######\n");
             System.out.println("NOW WE WOULD SEND A NOTIFICATION TO SYSADMIN TO CREATE THE ADDITIONAL ARTIFACTS");
             System.out.println("To Sys-Admin: \n" + additionalArtifactsDesc);
@@ -27,6 +34,7 @@ public class NotificationDelegate implements JavaDelegate {
         }
 
         if (execution.getCurrentActivityId().equals("CloseExtraArtifactsNotification")) {
+            service.startProcessInstanceByMessage("notifyAdminToDeleteArtifacts", execution.getVariables());
             System.out.println("\n######\n");
             System.out.println("NOW WE WOULD SEND A NOTIFICATION TO SYSADMIN TO CLOSE THE ADDITIONAL ARTIFACTS");
             System.out.println("\n######\n");

@@ -24,6 +24,7 @@ public class SonarQubeCreateDelegate implements JavaDelegate {
             try {
 
 
+
                 execution.setVariable("sonarqube_created", true);
                 System.out.println("\n######\n");
                 System.out.println("NOW WE WOULD CREATE A SQ GATE WITH THE PROFILE: " + sqProfile);
