@@ -3,8 +3,6 @@ package de.novatecgmbh.camunda.bpm.prototype.camunda.delegates.create_operations
 import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 

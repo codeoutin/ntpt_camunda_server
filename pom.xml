@@ -5,101 +5,57 @@
     <artifactId>springboot-offline-example-task</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
+    <!--Spring Boot Dependency-->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.3.RELEASE</version>
+        <version>1.5.9.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>1.5.8.RELEASE</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.camunda.bpm</groupId>
-                <artifactId>camunda-bom</artifactId>
-                <version>7.7.0</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.camunda.bpm.dmn</groupId>
-                <artifactId>camunda-engine-dmn-bom</artifactId>
-                <version>7.7.0</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <dependencies>
+        <!--Spring Boot-->
         <dependency>
-            <groupId>org.camunda.bpm.extension.springboot</groupId>
-            <artifactId>camunda-bpm-spring-boot-starter-rest</artifactId>
-            <version>2.2.0</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>org.springframework.boot</groupId>-->
-        <!--<artifactId>spring-boot-starter-data-rest</artifactId>-->
-        <!--</dependency>-->
+        <!--Spring Boot REST-Api-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
 
+        <!--Camunda Webapps-->
         <dependency>
             <groupId>org.camunda.bpm.springboot</groupId>
             <artifactId>camunda-bpm-spring-boot-starter-webapp</artifactId>
             <version>2.3.0</version>
         </dependency>
 
+        <!--Camunda REST-Api-->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <groupId>org.camunda.bpm.extension.springboot</groupId>
+            <artifactId>camunda-bpm-spring-boot-starter-rest</artifactId>
+            <version>2.2.0</version>
         </dependency>
 
-
-        <dependency>
-            <groupId>org.camunda.bpm</groupId>
-            <artifactId>camunda-engine-rest</artifactId>
-            <classifier>classes</classifier>
-        </dependency>
-
-        <dependency>
-            <groupId>org.camunda.bpm.extension</groupId>
-            <artifactId>camunda-bpm-process-test-coverage</artifactId>
-            <version>0.3.2</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- H2 Database (not used anymore) -->
+        <!--H2 Database-->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>
 
-        <!--Mongo DB-->
+
+
+        <!--Mongo DB Java Driver-->
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
             <version>3.6.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>commons-configuration</groupId>
-            <artifactId>commons-configuration</artifactId>
-            <version>1.9</version>
-        </dependency>
-
-        <!--Jackson for Rest Calls-->
+        <!--Jackson for REST Calls-->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
@@ -113,10 +69,24 @@
             <version>3.1</version>
         </dependency>
 
+        <!--Probably not used anymore-->
+        <!--<dependency>-->
+        <!--<groupId>org.camunda.bpm</groupId>-->
+        <!--<artifactId>camunda-engine-rest</artifactId>-->
+        <!--<classifier>classes</classifier>-->
+        <!--</dependency>-->
 
-
+        <!--Adds a great visual Unit Test for the BPMN Process (not used tho)-->
+        <!--https://github.com/camunda/camunda-bpm-process-test-coverage-->
+        <!--<dependency>-->
+        <!--<groupId>org.camunda.bpm.extension</groupId>-->
+        <!--<artifactId>camunda-bpm-process-test-coverage</artifactId>-->
+        <!--<version>0.3.2</version>-->
+        <!--<scope>test</scope>-->
+        <!--</dependency>-->
     </dependencies>
 
+    <!--Set Java Version 8-->
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>

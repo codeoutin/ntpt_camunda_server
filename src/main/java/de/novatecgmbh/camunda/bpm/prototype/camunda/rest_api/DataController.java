@@ -1,8 +1,5 @@
 package de.novatecgmbh.camunda.bpm.prototype.camunda.rest_api;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;

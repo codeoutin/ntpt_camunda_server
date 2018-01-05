@@ -1,13 +1,9 @@
 package de.novatecgmbh.camunda.bpm.prototype.camunda.delegates.create_operations;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Service;
-
-import java.io.InputStream;
-import java.net.URL;
 
 
 @Service("createTestEnvAdapter")

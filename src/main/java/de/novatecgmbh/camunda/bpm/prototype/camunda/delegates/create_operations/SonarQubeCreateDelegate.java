@@ -5,10 +5,6 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Service;
 
-import java.io.InputStream;
-import java.net.URL;
-
-
 @Service("createSQAdapter")
 public class SonarQubeCreateDelegate implements JavaDelegate {
 
