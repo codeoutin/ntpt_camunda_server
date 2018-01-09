@@ -5,7 +5,10 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Service;
 
-
+/**
+ * Simulates to create a Test Environment
+ * @author Patrick Steger
+ */
 @Service("createTestEnvAdapter")
 public class TestEnvCreateDelegate implements JavaDelegate {
 

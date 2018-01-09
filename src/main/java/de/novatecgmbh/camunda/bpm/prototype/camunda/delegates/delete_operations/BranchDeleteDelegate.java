@@ -3,11 +3,13 @@ package de.novatecgmbh.camunda.bpm.prototype.camunda.delegates.delete_operations
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Service;
-
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-
+/**
+ * Class to delete a GitLab Branch
+ * @author Patrick Steger
+ */
 @Service("closeBranchAdapter")
 public class BranchDeleteDelegate implements JavaDelegate {
 
@@ -17,12 +19,14 @@ public class BranchDeleteDelegate implements JavaDelegate {
         String gitToken = (String) execution.getVariable("git_token");
         String gitProjectId = (String) execution.getVariable("git_project");
 
+        //Find out if Git was successfully created, maybe its better to test if its really created, by trying to connect to the branch, instead of asking for Variables
         boolean gitBranchCreated;
         if (execution.getVariable("git_branch_created") == null)
             gitBranchCreated = false;
         else
             gitBranchCreated = (boolean) execution.getVariable("git_branch_created");
 
+        //Create the URL for a REST-Api Call and send it to the GitLab Server
         if (gitBranchCreated) {
             String DeleteBranchUrl = gitUrl
                     + "/api/v4/projects/"

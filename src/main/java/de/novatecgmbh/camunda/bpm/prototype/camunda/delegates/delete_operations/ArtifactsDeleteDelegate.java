@@ -6,11 +6,15 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Service;
 
+import java.io.DataOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 @Service("emptyArtifactsAdapter")
 public class ArtifactsDeleteDelegate implements JavaDelegate {
@@ -20,6 +24,7 @@ public class ArtifactsDeleteDelegate implements JavaDelegate {
         boolean dbCreated;
         boolean bpCreated;
         boolean testEnvCreated;
+        boolean sqCreated;
 
         //Castings
         if (execution.getVariable("db_created") == null)
@@ -36,7 +41,10 @@ public class ArtifactsDeleteDelegate implements JavaDelegate {
             testEnvCreated = false;
         else
             testEnvCreated = (boolean) execution.getVariable("test_environment_created");
-
+        if (execution.getVariable("sonarqube_created") == null)
+            sqCreated = false;
+        else
+            sqCreated = (boolean) execution.getVariable("sonarqube_created");
 
         // Create Prefix
         String prefix = (String) execution.getVariable("prefix");
@@ -58,14 +66,25 @@ public class ArtifactsDeleteDelegate implements JavaDelegate {
             execution.setVariable("bp_created", false);
         }
 
-        // Destroy Test Environment
+        // "Destroy" Test Environment
         if (testEnvCreated) {
-            Boolean testEnv = (Boolean) execution.getVariable("test_environment");
             dropTestEnv("/var/home/root/environments", prefix);
             execution.setVariable("test_environment_created", false);
         }
+
+        //Destroy SonarQube Project
+        if (sqCreated) {
+            String sqUrl = "http://" + execution.getVariable("sonarqube_url");
+            dropSonarqubeProject(sqUrl, prefix);
+            execution.setVariable("sonarqube_created", false);
+        }
     }
 
+    /**
+     * Deletes a MongoDB Database
+     * @param url MongoDB URL + Port
+     * @param database Name of Database
+     */
     private void dropDatabase(String url, String database) {
         // Split URL into host + port
         Pattern pattern = Pattern.compile("(https?://)([^:^/]*)(:\\d*)?(.*)?");
@@ -81,10 +100,20 @@ public class ArtifactsDeleteDelegate implements JavaDelegate {
         System.out.println("###\nDB " + database + " deleted\n###");
     }
 
+    /**
+     * Simulates Erasure of a Test Environment, since we dont create one, we are not able to delete one
+     * @param url Test Environment URL
+     * @param name Name of Test Environment
+     */
     private void dropTestEnv(String url, String name) {
         System.out.println("###\nTest Environment located at " + url + "/" + name + " deleted\n###");
     }
 
+    /**
+     * Deletes a Jenkins Job
+     * @param url Jenkins URL
+     * @param job Jenkins Job Name
+     */
     private void dropBP(String url, String job) {
         try {
             String CreateDeleteUrl = url
@@ -98,8 +127,39 @@ public class ArtifactsDeleteDelegate implements JavaDelegate {
             System.out.println("###\nJenkins Job " + job + " deleted\n###");
             System.out.println("Message: " + c.getResponseMessage() + "\n#####\n");
         } catch (Exception e) {
-            System.out.println("Error while creating a new Git Branch. Task cancelled.");
-            throw new BpmnError("CreateError");
+            // Space for Exception Handling
+            // throw new BpmnError("CreateError");
+        }
+    }
+
+    /**
+     * Deletes a SonarQube Project
+     * @param url SonarQube URL
+     * @param project SonarQube Project Name
+     */
+    private void dropSonarqubeProject(String url, String project) {
+        try {
+            //Make URL to Delete a Project using SQ REST Api
+            String deleteUrl = url+ "/api/projects/delete";
+            String deleteParams  = "project="+project;
+            byte[] deleteData = deleteParams.getBytes( StandardCharsets.UTF_8 );
+            String basicAuth = Base64.getEncoder().encodeToString(("admin:admin").getBytes(StandardCharsets.UTF_8));
+
+            //Delete the SQ Project
+            HttpURLConnection delConn =  (HttpURLConnection) new URL(deleteUrl).openConnection();
+            delConn.setDoOutput(true);
+            delConn.setRequestMethod("POST");
+            delConn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            delConn.setRequestProperty("charset", "utf-8");
+            delConn.setRequestProperty("Authorization", "Basic " + basicAuth);
+            delConn.setRequestProperty("Content-Length", Integer.toString(deleteData.length ));
+            delConn.setUseCaches(false);
+            try(DataOutputStream d = new DataOutputStream(delConn.getOutputStream())) {
+                d.write( deleteData );
+            }
+            System.out.println("SonarQube Profile deleted. Code " + delConn.getResponseCode());
+        } catch (Exception e) {
+            // Space for Exception Handling
         }
     }
 }

@@ -12,13 +12,15 @@ import org.springframework.stereotype.Service;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+/**
+ * Creates a Database on a MongoDB Server
+ * @author Patrick Steger
+ */
 @Service("createDatabaseAdapter")
 public class DatebaseCreateDelegate implements JavaDelegate {
 
     public void execute(DelegateExecution execution) throws Exception {
         String prefix = (String) execution.getVariable("prefix");
-
         String dbUrl = (String) execution.getVariable("db_url");
 
         if (dbUrl != null) {

@@ -6,6 +6,10 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * Contains all the Notification Methods, checks current Activity (Task) and print to the console
+ * @author Patrick Steger
+ */
 @Service("NotificationAdapter")
 public class NotificationDelegate implements JavaDelegate {
 
@@ -15,8 +19,6 @@ public class NotificationDelegate implements JavaDelegate {
     public void execute(DelegateExecution execution) throws Exception {
         String additionalArtifactsDesc = (String) execution.getVariable("additional_artifacts_text");
 
-        //System.out.println(">> current id: " + execution.getCurrentActivityId());
-
         if (execution.getCurrentActivityId().equals("RequestArtifactsNotification")) {
             service.startProcessInstanceByMessage("notifyAdminToCreateArtifacts", execution.getVariables());
             System.out.println("\n######\n");
@@ -24,7 +26,6 @@ public class NotificationDelegate implements JavaDelegate {
             System.out.println("To Sys-Admin: \n" + additionalArtifactsDesc);
             System.out.println("\n######\n");
         }
-
 
         if (execution.getCurrentActivityId().equals("CloseTimerNotification")) {
             System.out.println("\n######\n");

@@ -12,7 +12,11 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 
-
+/**
+ * Creates Jenkins Jobs based on DMN Output. To create a job we always use the same template and just change the name
+ * For further development, you could use a (XML) Template Engine to customize the Job based on your needs.
+ * @author Patrick Steger
+ */
 @Service("createBPAdapter")
 public class BuildpipelineCreateDelegate implements JavaDelegate {
 
@@ -22,17 +26,19 @@ public class BuildpipelineCreateDelegate implements JavaDelegate {
 
         if (jenkinsUrl != null) {
             try {
+                //Collect the DMN Output in a new List
                 List<String> dmn_output = (List<String>) execution.getVariable("dmn_output");
 
                 for (int i = 0; i < dmn_output.size(); i++) {
 
-                    // Create URL to Create a Branch using Gitlab REST Api
+                    //Make URL to create a single Jenkins Job
                     String CreateJobUrl = jenkinsUrl
                             + "/createItem?name="
                             + prefix
                             + "_"
                             + dmn_output.get(i);
 
+                    //Use config.xml as Template for the Job and post it to Jenkins REST-Api
                     File input = new File("src/main/resources/config.xml");
                     PostMethod post = new PostMethod(CreateJobUrl);
                     post.setRequestEntity(new InputStreamRequestEntity(

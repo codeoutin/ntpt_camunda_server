@@ -9,7 +9,10 @@ import java.net.URL;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Service;
 
-
+/**
+ * Create a new GitLab Branch based on an existing Branch in an existing Project
+ * @author Patrick Steger
+ */
 @Service("createBranchAdapter")
 public class BranchCreateDelegate implements JavaDelegate {
 
@@ -23,7 +26,7 @@ public class BranchCreateDelegate implements JavaDelegate {
         // Check if Variables are NOT empty
         if (!(gitBranchName.isEmpty() && gitToken.isEmpty() && gitProjectId.isEmpty() && gitCommitId.isEmpty())) {
             try {
-                // Create URL to Create a Branch using Gitlab REST Api
+                //Make URL to Create a Branch using Gitlab REST Api
                 String CreateBranchUrl = gitUrl
                         + "/api/v4/projects/"
                         + gitProjectId
@@ -32,6 +35,7 @@ public class BranchCreateDelegate implements JavaDelegate {
                         + "&ref="
                         + gitCommitId;
 
+                //Send using POST to GitLab's Api
                 HttpURLConnection c =  (HttpURLConnection) new URL(CreateBranchUrl).openConnection();
                 c.setRequestMethod("POST");
                 c.setRequestProperty("PRIVATE-TOKEN", gitToken);
