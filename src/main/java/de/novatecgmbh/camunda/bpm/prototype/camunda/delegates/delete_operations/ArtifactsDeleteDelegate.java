@@ -27,24 +27,10 @@ public class ArtifactsDeleteDelegate implements JavaDelegate {
         boolean sqCreated;
 
         //Castings
-        if (execution.getVariable("db_created") == null)
-            dbCreated = false;
-        else
-            dbCreated = (boolean) execution.getVariable("db_created");
-
-        if (execution.getVariable("bp_created") == null)
-            bpCreated = false;
-        else
-            bpCreated = (boolean) execution.getVariable("bp_created");
-
-        if (execution.getVariable("test_environment_created") == null)
-            testEnvCreated = false;
-        else
-            testEnvCreated = (boolean) execution.getVariable("test_environment_created");
-        if (execution.getVariable("sonarqube_created") == null)
-            sqCreated = false;
-        else
-            sqCreated = (boolean) execution.getVariable("sonarqube_created");
+        dbCreated = execution.getVariable("db_created") != null && (boolean) execution.getVariable("db_created");
+        bpCreated = execution.getVariable("bp_created") != null && (boolean) execution.getVariable("bp_created");
+        testEnvCreated = execution.getVariable("test_environment_created") != null && (boolean) execution.getVariable("test_environment_created");
+        sqCreated = execution.getVariable("sonarqube_created") != null && (boolean) execution.getVariable("sonarqube_created");
 
         // Create Prefix
         String prefix = (String) execution.getVariable("prefix");

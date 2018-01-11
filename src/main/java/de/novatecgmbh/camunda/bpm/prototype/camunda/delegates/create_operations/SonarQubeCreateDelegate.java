@@ -25,7 +25,8 @@ public class SonarQubeCreateDelegate implements JavaDelegate {
         //String sqPw = (String) execution.getVariable("sq_pw");
         String sqProfile = (String) execution.getVariable("sonarqube_profile");
 
-        if(sqProfile != "no" && sqUrl != null) {
+        //Check if SonarQube not "no", not empty and Url is not null
+        if(!sqProfile.equals("no") && !sqProfile.equals("") && sqUrl != null) {
             try {
                 //Make URL to Create a SQ Project
                 String createUrl = sqUrl+ "/api/projects/create";

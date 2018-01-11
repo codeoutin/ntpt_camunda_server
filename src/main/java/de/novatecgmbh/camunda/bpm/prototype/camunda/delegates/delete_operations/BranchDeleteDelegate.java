@@ -21,10 +21,7 @@ public class BranchDeleteDelegate implements JavaDelegate {
 
         //Find out if Git was successfully created, maybe its better to test if its really created, by trying to connect to the branch, instead of asking for Variables
         boolean gitBranchCreated;
-        if (execution.getVariable("git_branch_created") == null)
-            gitBranchCreated = false;
-        else
-            gitBranchCreated = (boolean) execution.getVariable("git_branch_created");
+        gitBranchCreated = execution.getVariable("git_branch_created") != null && (boolean) execution.getVariable("git_branch_created");
 
         //Create the URL for a REST-Api Call and send it to the GitLab Server
         if (gitBranchCreated) {
@@ -34,7 +31,7 @@ public class BranchDeleteDelegate implements JavaDelegate {
                     + "/repository/branches/"
                     + gitBranchName;
 
-            HttpURLConnection c =  (HttpURLConnection) new URL(DeleteBranchUrl).openConnection();
+            HttpURLConnection c = (HttpURLConnection) new URL(DeleteBranchUrl).openConnection();
             c.setRequestMethod("DELETE");
             c.setRequestProperty("PRIVATE-TOKEN", gitToken);
 
