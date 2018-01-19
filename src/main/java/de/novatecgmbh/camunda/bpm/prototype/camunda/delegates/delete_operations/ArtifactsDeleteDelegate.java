@@ -83,7 +83,7 @@ public class ArtifactsDeleteDelegate implements JavaDelegate {
         // Connect to MongoDB Driver
         MongoClient mongoClient = new MongoClient(domain, port);
         mongoClient.dropDatabase(database);
-        System.out.println("###\nDB " + database + " deleted\n###");
+        System.out.println("###\nDB " + database + " deleted");
     }
 
     /**
@@ -92,7 +92,7 @@ public class ArtifactsDeleteDelegate implements JavaDelegate {
      * @param name Name of Test Environment
      */
     private void dropTestEnv(String url, String name) {
-        System.out.println("###\nTest Environment located at " + url + "/" + name + " deleted\n###");
+        System.out.println("###\nTest Environment located at " + url + "/" + name + " deleted");
     }
 
     /**
@@ -110,8 +110,8 @@ public class ArtifactsDeleteDelegate implements JavaDelegate {
             HttpURLConnection c =  (HttpURLConnection) new URL(CreateDeleteUrl).openConnection();
             c.setRequestMethod("POST");
 
-            System.out.println("###\nJenkins Job " + job + " deleted\n###");
-            System.out.println("Message: " + c.getResponseMessage() + "\n#####\n");
+            System.out.println("###\nJenkins Job " + job + " deleted");
+            System.out.println("Message: " + c.getResponseMessage());
         } catch (Exception e) {
             // Space for Exception Handling
             // throw new BpmnError("CreateError");

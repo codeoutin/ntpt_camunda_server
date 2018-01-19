@@ -22,21 +22,23 @@ public class BuildpipelineCreateDelegate implements JavaDelegate {
 
     public void execute(DelegateExecution execution) throws Exception {
         String prefix = (String) execution.getVariable("prefix");
-        String jenkinsUrl = "http://" + execution.getVariable("bp_url");
+        String jenkinsUrl = (String) execution.getVariable("bp_url");
 
         if (jenkinsUrl != null) {
+            System.out.println("\n# createBPAdapter @ " + prefix + " #\nTry to create Jenkins Jobs...");
             try {
                 //Collect the DMN Output in a new List
                 List<String> dmn_output = (List<String>) execution.getVariable("dmn_output");
-
-                for (int i = 0; i < dmn_output.size(); i++) {
+                int jobCount = 0;
+                while (jobCount < dmn_output.size()) {
 
                     //Make URL to create a single Jenkins Job
-                    String CreateJobUrl = jenkinsUrl
+                    String CreateJobUrl = "http://"
+                            + jenkinsUrl
                             + "/createItem?name="
                             + prefix
                             + "_"
-                            + dmn_output.get(i);
+                            + dmn_output.get(jobCount);
 
                     //Use config.xml as Template for the Job and post it to Jenkins REST-Api
                     File input = new File("src/main/resources/config.xml");
@@ -48,19 +50,23 @@ public class BuildpipelineCreateDelegate implements JavaDelegate {
                     HttpClient httpclient = new HttpClient();
                     int result = httpclient.executeMethod(post);
 
-                    System.out.println("\n#####\n Create Jenkins Job for " + dmn_output.get(i) + ". Status Code: " + result + "\n#####\n");
+                    System.out.println(jobCount + ". Created Jenkins Job for " + dmn_output.get(jobCount) + ". Http Status Code: " + result);
+                    jobCount++;
 //                    System.out.println("Response body: ");
 //                    System.out.println(post.getResponseBodyAsString());
                 }
 
+                // Log to Console
+                System.out.println("Build Pipeline with " + jobCount + " Jobs created.");
+
+                // Set Process Variable for later checks
                 execution.setVariable("bp_created", true);
             } catch (Exception e) {
                 execution.setVariable("bp_created", false);
                 execution.setVariable("db_created", false);
                 execution.setVariable("test_environment_created", false);
                 execution.setVariable("sonarqube_created", false);
-                System.out.println("Error while creating a Build Pipeline. Task cancelled.");
-                System.out.println(e.getMessage());
+                System.out.println("Error while creating a Build Pipeline. Error Message: " + e.getMessage());
                 throw new BpmnError("CreateError");
             }
         }

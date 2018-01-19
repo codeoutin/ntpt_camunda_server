@@ -14,6 +14,7 @@ import java.net.URL;
 public class BranchDeleteDelegate implements JavaDelegate {
 
     public void execute(DelegateExecution execution) throws Exception {
+        String prefix = (String) execution.getVariable("prefix");
         String gitBranchName = (String) execution.getVariable("git_branch_name");
         String gitUrl = "http://" + execution.getVariable("git_url");
         String gitToken = (String) execution.getVariable("git_token");
@@ -25,6 +26,7 @@ public class BranchDeleteDelegate implements JavaDelegate {
 
         //Create the URL for a REST-Api Call and send it to the GitLab Server
         if (gitBranchCreated) {
+            System.out.println("\n\n\n# closeBranchAdapter @ " + prefix + " #\nTry to delete Git Branch...");
             String DeleteBranchUrl = gitUrl
                     + "/api/v4/projects/"
                     + gitProjectId

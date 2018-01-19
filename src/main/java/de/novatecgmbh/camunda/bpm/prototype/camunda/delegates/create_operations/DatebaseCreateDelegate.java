@@ -24,15 +24,18 @@ public class DatebaseCreateDelegate implements JavaDelegate {
         String dbUrl = (String) execution.getVariable("db_url");
 
         if (dbUrl != null) {
+            System.out.println("\n# createDatabaseAdapter @ " + prefix + " #\nTry to create MongoDB-Database...");
             try {
                 // Add http to url (dont do this before or if-check doesnt work!
                 dbUrl = "http://" + dbUrl;
                 // Split URL into host + port
+                // Match 1: Protocol, Match 2: Base URL, Match 3: Port, Match 4: Everything else
                 Pattern pattern = Pattern.compile("(https?://)([^:^/]*)(:\\d*)?(.*)?");
                 Matcher matcher = pattern.matcher(dbUrl);
                 matcher.find();
 
                 String domain   = matcher.group(2);
+                // Remove all non-digit symbols (:)
                 int port     = Integer.parseInt(matcher.group(3).replaceAll("\\D+",""));
 
                 // Connect to MongoDB Driver
@@ -45,14 +48,17 @@ public class DatebaseCreateDelegate implements JavaDelegate {
                 MongoCollection<Document> collection = db.getCollection("doc");
                 collection.insertOne(doc);
 
+                // Log to Console
+                System.out.println("Database " + prefix + " created.");
+
+                // Set Process Variable for later checks
                 execution.setVariable("db_created", true);
-                System.out.println("\n#####\nDB " + prefix + " created\n#####\n");
             } catch (Exception e) {
                 execution.setVariable("db_created", false);
                 execution.setVariable("test_environment_created", false);
                 execution.setVariable("sonarqube_created", false);
-                System.out.println("Error while creating a Database. Task cancelled.");
-                throw new BpmnError("CreateError");
+                System.out.println("Error while creating a Database. Error Message: " + e.getMessage());
+                throw new BpmnError("CreateError", e.getMessage());
             }
         }
     }

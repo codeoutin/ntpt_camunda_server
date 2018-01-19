@@ -18,7 +18,6 @@
       </bpmn:lane>
       <bpmn:lane id="EngineLane" name="Engine">
         <bpmn:flowNodeRef>SubProcess_0qmg2un</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>ResetReminderTimer</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ExclusiveGateway_0baxbmd</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_0rdh4sd</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CreateArtifactsSub</bpmn:flowNodeRef>
@@ -28,6 +27,8 @@
         <bpmn:flowNodeRef>CloseTimerNotification</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CloseExtraArtifactsNotification</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ExclusiveGateway_1awjq12</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ResetReminderTimer</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>WaitAfterCreateTimer</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:sequenceFlow id="SequenceFlow_0gkzt8k" sourceRef="BoundaryEvent_03tjt4f" targetRef="CatchException" />
@@ -68,7 +69,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_01fuk9x" sourceRef="CatchException" targetRef="SubProcess_0qmg2un" />
     <bpmn:subProcess id="CreateArtifactsSub" name="Create Artifacts">
       <bpmn:incoming>SequenceFlow_0s727dx</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_16dfpuy</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_0w4w8qo</bpmn:outgoing>
       <bpmn:serviceTask id="CreateBranch" name="Create Branch in Repository" camunda:asyncAfter="true" camunda:delegateExpression="#{createBranchAdapter}">
         <bpmn:incoming>SequenceFlow_1dszh6q</bpmn:incoming>
         <bpmn:outgoing>SequenceFlow_1j4sxml</bpmn:outgoing>
@@ -89,7 +90,7 @@
       <bpmn:sequenceFlow id="SequenceFlow_1dszh6q" sourceRef="StartEvent_0cr63e8" targetRef="CreateBranch" />
       <bpmn:sequenceFlow id="SequenceFlow_0g1ov6s" sourceRef="CreateOptionalArtifacts" targetRef="CreateDatabase" />
       <bpmn:sequenceFlow id="SequenceFlow_1xjrxm3" sourceRef="CreateDatabase" targetRef="CreateTestEnvironment" />
-      <bpmn:serviceTask id="CreateDatabase" name="Create Database Schema" camunda:delegateExpression="#{createDatabaseAdapter}">
+      <bpmn:serviceTask id="CreateDatabase" name="Create Database" camunda:delegateExpression="#{createDatabaseAdapter}">
         <bpmn:incoming>SequenceFlow_0g1ov6s</bpmn:incoming>
         <bpmn:outgoing>SequenceFlow_1xjrxm3</bpmn:outgoing>
       </bpmn:serviceTask>
@@ -100,30 +101,23 @@
       <bpmn:endEvent id="EndEvent_0qk186m">
         <bpmn:incoming>SequenceFlow_1j9p106</bpmn:incoming>
       </bpmn:endEvent>
-      <bpmn:sequenceFlow id="SequenceFlow_0m0201q" sourceRef="CreateTestEnvironment" targetRef="CreateSonarqube" />
-      <bpmn:sequenceFlow id="SequenceFlow_1j9p106" sourceRef="CreateSonarqube" targetRef="EndEvent_0qk186m" />
-      <bpmn:serviceTask id="CreateSonarqube" name="Create Quality-Gate in SonarQube" camunda:delegateExpression="#{createSQAdapter}">
+      <bpmn:sequenceFlow id="SequenceFlow_0m0201q" sourceRef="CreateTestEnvironment" targetRef="CreateQualityRules" />
+      <bpmn:sequenceFlow id="SequenceFlow_1j9p106" sourceRef="CreateQualityRules" targetRef="EndEvent_0qk186m" />
+      <bpmn:serviceTask id="CreateQualityRules" name="Create &#38; Assign Quality Rules" camunda:delegateExpression="#{createQAAdapter}">
         <bpmn:incoming>SequenceFlow_0m0201q</bpmn:incoming>
         <bpmn:outgoing>SequenceFlow_1j9p106</bpmn:outgoing>
       </bpmn:serviceTask>
     </bpmn:subProcess>
-    <bpmn:intermediateCatchEvent id="ResetReminderTimer" name="10 Seconds">
-      <bpmn:incoming>SequenceFlow_0qg3kac</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_0s310sz</bpmn:outgoing>
-      <bpmn:timerEventDefinition>
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT10S</bpmn:timeDuration>
-      </bpmn:timerEventDefinition>
-    </bpmn:intermediateCatchEvent>
     <bpmn:inclusiveGateway id="ExclusiveGateway_0baxbmd">
-      <bpmn:incoming>SequenceFlow_0y47pjs</bpmn:incoming>
-      <bpmn:incoming>SequenceFlow_16dfpuy</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_0qg3kac</bpmn:outgoing>
+      <bpmn:incoming>SequenceFlow_0zeu1n0</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_024ki6v</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_050fq0b</bpmn:outgoing>
     </bpmn:inclusiveGateway>
     <bpmn:subProcess id="SubProcess_0qmg2un" name="Reset Artifacts">
       <bpmn:incoming>SequenceFlow_01f98gq</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_01fuk9x</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1p012cp</bpmn:outgoing>
-      <bpmn:serviceTask id="EmptyOptArtifacts" name="Empty optional artifacts" camunda:delegateExpression="#{emptyArtifactsAdapter}">
+      <bpmn:serviceTask id="CloseCreatedRessources" name="Close created Ressources" camunda:delegateExpression="#{emptyArtifactsAdapter}">
         <bpmn:incoming>SequenceFlow_11u8qah</bpmn:incoming>
         <bpmn:outgoing>SequenceFlow_182mogb</bpmn:outgoing>
       </bpmn:serviceTask>
@@ -134,8 +128,8 @@
       <bpmn:endEvent id="EndEvent_1i7ju0y">
         <bpmn:incoming>SequenceFlow_182mogb</bpmn:incoming>
       </bpmn:endEvent>
-      <bpmn:sequenceFlow id="SequenceFlow_182mogb" sourceRef="EmptyOptArtifacts" targetRef="EndEvent_1i7ju0y" />
-      <bpmn:sequenceFlow id="SequenceFlow_11u8qah" sourceRef="CloseBranch" targetRef="EmptyOptArtifacts" />
+      <bpmn:sequenceFlow id="SequenceFlow_182mogb" sourceRef="CloseCreatedRessources" targetRef="EndEvent_1i7ju0y" />
+      <bpmn:sequenceFlow id="SequenceFlow_11u8qah" sourceRef="CloseBranch" targetRef="CloseCreatedRessources" />
       <bpmn:startEvent id="StartEvent_1kcj5ss">
         <bpmn:outgoing>SequenceFlow_1lnpcbp</bpmn:outgoing>
       </bpmn:startEvent>
@@ -147,11 +141,7 @@
     <bpmn:userTask id="DevSelectCloseOption" name="Select reset option" camunda:candidateGroups="sw_dev">
       <bpmn:extensionElements>
         <camunda:formData>
-          <camunda:formField id="deleteArtifacts" label="Delete Artifacts?" type="boolean">
-            <camunda:validation>
-              <camunda:constraint name="required" />
-            </camunda:validation>
-          </camunda:formField>
+          <camunda:formField id="deleteArtifacts" label="Delete Artifacts?" type="boolean" />
         </camunda:formData>
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1eqzlvv</bpmn:incoming>
@@ -159,14 +149,9 @@
     </bpmn:userTask>
     <bpmn:exclusiveGateway id="ExclusiveGateway_15cjtzi">
       <bpmn:incoming>SequenceFlow_0qvubo3</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_0y47pjs</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_01f98gq</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_1y5pqmp</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="SequenceFlow_0qg3kac" sourceRef="ExclusiveGateway_0baxbmd" targetRef="ResetReminderTimer" />
-    <bpmn:sequenceFlow id="SequenceFlow_0s310sz" sourceRef="ResetReminderTimer" targetRef="CloseTimerNotification" />
-    <bpmn:sequenceFlow id="SequenceFlow_0y47pjs" name="Don&#39;t close" sourceRef="ExclusiveGateway_15cjtzi" targetRef="ExclusiveGateway_0baxbmd">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!deleteArtifacts}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_1p012cp" sourceRef="SubProcess_0qmg2un" targetRef="ExclusiveGateway_1awjq12" />
     <bpmn:sequenceFlow id="SequenceFlow_0pklypy" name="" sourceRef="ExclusiveGateway_1awjq12" targetRef="EndEvent_0rdh4sd">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${true}</bpmn:conditionExpression>
@@ -180,7 +165,6 @@
       <bpmn:outgoing>SequenceFlow_0gkzt8k</bpmn:outgoing>
       <bpmn:errorEventDefinition errorRef="Error_1n1rfed" />
     </bpmn:boundaryEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_16dfpuy" sourceRef="CreateArtifactsSub" targetRef="ExclusiveGateway_0baxbmd" />
     <bpmn:sequenceFlow id="SequenceFlow_1v1jps9" name="yes" sourceRef="ExclusiveGateway_027tl96" targetRef="RequestArtifactsNotification">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${additional_artifacts}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -192,8 +176,8 @@
       <bpmn:incoming>SequenceFlow_1v1jps9</bpmn:incoming>
       <bpmn:messageEventDefinition camunda:delegateExpression="#{NotificationAdapter}" />
     </bpmn:intermediateThrowEvent>
-    <bpmn:sendTask id="CloseTimerNotification" name="Send Reminder Notification" camunda:delegateExpression="#{NotificationAdapter}">
-      <bpmn:incoming>SequenceFlow_0s310sz</bpmn:incoming>
+    <bpmn:sendTask id="CloseTimerNotification" name="Ask Developer for Close" camunda:delegateExpression="#{NotificationAdapter}">
+      <bpmn:incoming>SequenceFlow_050fq0b</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1eqzlvv</bpmn:outgoing>
     </bpmn:sendTask>
     <bpmn:intermediateThrowEvent id="CloseExtraArtifactsNotification">
@@ -208,6 +192,27 @@
       <bpmn:outgoing>SequenceFlow_0pklypy</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_08phy8x</bpmn:outgoing>
     </bpmn:inclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_0zeu1n0" sourceRef="ResetReminderTimer" targetRef="ExclusiveGateway_0baxbmd" />
+    <bpmn:sequenceFlow id="SequenceFlow_050fq0b" sourceRef="ExclusiveGateway_0baxbmd" targetRef="CloseTimerNotification" />
+    <bpmn:sequenceFlow id="SequenceFlow_1y5pqmp" sourceRef="ExclusiveGateway_15cjtzi" targetRef="ResetReminderTimer">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!deleteArtifacts}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:intermediateCatchEvent id="ResetReminderTimer" name="30 Days">
+      <bpmn:incoming>SequenceFlow_1y5pqmp</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0zeu1n0</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P30D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:intermediateCatchEvent id="WaitAfterCreateTimer" name="20 Seconds">
+      <bpmn:incoming>SequenceFlow_0w4w8qo</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_024ki6v</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT20S</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0w4w8qo" sourceRef="CreateArtifactsSub" targetRef="WaitAfterCreateTimer" />
+    <bpmn:sequenceFlow id="SequenceFlow_024ki6v" sourceRef="WaitAfterCreateTimer" targetRef="ExclusiveGateway_0baxbmd" />
   </bpmn:process>
   <bpmn:process id="ManualArtifacts" isExecutable="true">
     <bpmn:sequenceFlow id="SequenceFlow_0eapk15" sourceRef="CreateArtifacts" targetRef="EndEvent_16j2bda" />
@@ -268,7 +273,7 @@
       <bpmndi:BPMNShape id="ServiceTask_0r2sjkb_di" bpmnElement="CloseBranch">
         <dc:Bounds x="1979" y="527" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_11a86zx_di" bpmnElement="EmptyOptArtifacts">
+      <bpmndi:BPMNShape id="ServiceTask_11a86zx_di" bpmnElement="CloseCreatedRessources">
         <dc:Bounds x="2125" y="527" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Participant_1r5cdsp_di" bpmnElement="Participant_1r5cdsp">
@@ -287,9 +292,9 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="IntermediateCatchEvent_1jogte1_di" bpmnElement="ResetReminderTimer">
-        <dc:Bounds x="1657" y="462" width="36" height="36" />
+        <dc:Bounds x="1539" y="396" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1696" y="474" width="58" height="12" />
+          <dc:Bounds x="1486" y="408" width="41" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
@@ -380,31 +385,6 @@
         <di:waypoint xsi:type="dc:Point" x="1782" y="149" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1709" y="128" width="90" height="12" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_0y47pjs_di" bpmnElement="SequenceFlow_0y47pjs">
-        <di:waypoint xsi:type="dc:Point" x="1807" y="124" />
-        <di:waypoint xsi:type="dc:Point" x="1807" y="71" />
-        <di:waypoint xsi:type="dc:Point" x="1510" y="71" />
-        <di:waypoint xsi:type="dc:Point" x="1510" y="439" />
-        <di:waypoint xsi:type="dc:Point" x="1587" y="551" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1812" y="80" width="54" height="12" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_0qg3kac_di" bpmnElement="SequenceFlow_0qg3kac">
-        <di:waypoint xsi:type="dc:Point" x="1605" y="533" />
-        <di:waypoint xsi:type="dc:Point" x="1605" y="480" />
-        <di:waypoint xsi:type="dc:Point" x="1657" y="480" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1575" y="501" width="90" height="12" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_0s310sz_di" bpmnElement="SequenceFlow_0s310sz">
-        <di:waypoint xsi:type="dc:Point" x="1675" y="462" />
-        <di:waypoint xsi:type="dc:Point" x="1675" y="403" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1645" y="426.5" width="90" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="StartEvent_1wzr7ge_di" bpmnElement="StartEvent_0rw2qwd">
@@ -566,16 +546,9 @@
           <dc:Bounds x="1358" y="540" width="0" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ServiceTask_08qe5xb_di" bpmnElement="CreateSonarqube">
+      <bpmndi:BPMNShape id="ServiceTask_08qe5xb_di" bpmnElement="CreateQualityRules">
         <dc:Bounds x="1239" y="521" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_16dfpuy_di" bpmnElement="SequenceFlow_16dfpuy">
-        <di:waypoint xsi:type="dc:Point" x="1451" y="558" />
-        <di:waypoint xsi:type="dc:Point" x="1580" y="558" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1515.5" y="537" width="0" height="12" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1v1jps9_di" bpmnElement="SequenceFlow_1v1jps9">
         <di:waypoint xsi:type="dc:Point" x="421" y="199" />
         <di:waypoint xsi:type="dc:Point" x="421" y="567" />
@@ -644,6 +617,51 @@
           <dc:Bounds x="2420" y="487" width="87" height="24" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0zeu1n0_di" bpmnElement="SequenceFlow_0zeu1n0">
+        <di:waypoint xsi:type="dc:Point" x="1557" y="432" />
+        <di:waypoint xsi:type="dc:Point" x="1557" y="473" />
+        <di:waypoint xsi:type="dc:Point" x="1596" y="542" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1572" y="446.5" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_050fq0b_di" bpmnElement="SequenceFlow_050fq0b">
+        <di:waypoint xsi:type="dc:Point" x="1630" y="558" />
+        <di:waypoint xsi:type="dc:Point" x="1675" y="558" />
+        <di:waypoint xsi:type="dc:Point" x="1675" y="403" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1652.5" y="537" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1y5pqmp_di" bpmnElement="SequenceFlow_1y5pqmp">
+        <di:waypoint xsi:type="dc:Point" x="1807" y="124" />
+        <di:waypoint xsi:type="dc:Point" x="1807" y="60" />
+        <di:waypoint xsi:type="dc:Point" x="1557" y="60" />
+        <di:waypoint xsi:type="dc:Point" x="1557" y="396" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1682" y="39" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="IntermediateCatchEvent_1igpnms_di" bpmnElement="WaitAfterCreateTimer">
+        <dc:Bounds x="1502" y="540" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1491" y="580" width="58" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0w4w8qo_di" bpmnElement="SequenceFlow_0w4w8qo">
+        <di:waypoint xsi:type="dc:Point" x="1451" y="558" />
+        <di:waypoint xsi:type="dc:Point" x="1502" y="558" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1476.5" y="537" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_024ki6v_di" bpmnElement="SequenceFlow_024ki6v">
+        <di:waypoint xsi:type="dc:Point" x="1538" y="558" />
+        <di:waypoint xsi:type="dc:Point" x="1580" y="558" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1559" y="537" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
