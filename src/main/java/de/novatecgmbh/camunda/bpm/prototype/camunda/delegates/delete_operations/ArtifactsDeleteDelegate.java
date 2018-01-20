@@ -52,9 +52,10 @@ public class ArtifactsDeleteDelegate implements JavaDelegate {
             execution.setVariable("bp_created", false);
         }
 
-        // "Destroy" Test Environment
+        // Destroy Docker Container
         if (testEnvCreated) {
-            dropTestEnv("/var/home/root/environments", prefix);
+            String dockerUrl = (String) execution.getVariable("test_environment_url");
+            dropTestEnv(dockerUrl, prefix);
             execution.setVariable("test_environment_created", false);
         }
 
@@ -87,12 +88,29 @@ public class ArtifactsDeleteDelegate implements JavaDelegate {
     }
 
     /**
-     * Simulates Erasure of a Test Environment, since we dont create one, we are not able to delete one
-     * @param url Test Environment URL
-     * @param name Name of Test Environment
+     * Stops and Deletes a Docker Container
+     * @param url Docker API URL
+     * @param container Name of Container
      */
-    private void dropTestEnv(String url, String name) {
-        System.out.println("###\nTest Environment located at " + url + "/" + name + " deleted");
+    private void dropTestEnv(String url, String container) {
+        try {
+            // Create URL to start Container
+            String deleteUrl = "http://" + url+ "/containers/" + container + "?force=true";
+
+            //Send POST Request to Start Container
+            HttpURLConnection deleteConn =  (HttpURLConnection) new URL(deleteUrl).openConnection();
+            deleteConn.setDoOutput(true); //needed for POST
+            deleteConn.setDoInput(true);
+            deleteConn.setRequestMethod("DELETE");
+            deleteConn.setRequestProperty("Content-Length", Integer.toString(deleteUrl.getBytes().length ));
+            System.out.println("Try to delete Docker Image...");
+            deleteConn.connect();
+            System.out.println(deleteConn.getResponseMessage());
+            System.out.println("Container stopped & deleted. HTTP Response Code: " + deleteConn.getResponseCode());
+        } catch (Exception e) {
+            // Space for Exception Handling
+            // throw new BpmnError("CreateError");
+        }
     }
 
     /**
