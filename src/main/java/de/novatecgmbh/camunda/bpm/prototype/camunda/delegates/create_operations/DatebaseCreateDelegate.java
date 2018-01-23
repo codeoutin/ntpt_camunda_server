@@ -9,6 +9,7 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Service;
 
+import javax.json.Json;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,11 +21,11 @@ import java.util.regex.Pattern;
 public class DatebaseCreateDelegate implements JavaDelegate {
 
     public void execute(DelegateExecution execution) throws Exception {
-        String prefix = (String) execution.getVariable("prefix");
+        String dbName = (String) execution.getVariable("prefix");
         String dbUrl = (String) execution.getVariable("db_url");
 
         if (dbUrl != null) {
-            System.out.println("\n# createDatabaseAdapter @ " + prefix + " #\nTry to create MongoDB-Database...");
+            System.out.println("\n# createDatabaseAdapter @ " + dbName + " #\nTry to create MongoDB-Database...");
             try {
                 // Add http to url (dont do this before or if-check doesnt work!
                 dbUrl = "http://" + dbUrl;
@@ -40,7 +41,7 @@ public class DatebaseCreateDelegate implements JavaDelegate {
 
                 // Connect to MongoDB Driver
                 MongoClient mongoClient = new MongoClient(domain, port);
-                MongoDatabase db = mongoClient.getDatabase(prefix);
+                MongoDatabase db = mongoClient.getDatabase(dbName);
 
                 // Create a sample document to actually create the new database
                 Document doc = new Document("name", "MongoDB")
@@ -48,11 +49,19 @@ public class DatebaseCreateDelegate implements JavaDelegate {
                 MongoCollection<Document> collection = db.getCollection("doc");
                 collection.insertOne(doc);
 
+                // Create Return JSON
+                String returnJson = Json.createObjectBuilder()
+                        .add("database_name", dbName)
+                        .add("database_url", "mongodb://" + domain + ":" + port + "/" + dbName)
+                        .build()
+                        .toString();
+
                 // Log to Console
-                System.out.println("Database " + prefix + " created.");
+                System.out.println("Database " + dbName + " created.");
 
                 // Set Process Variable for later checks
                 execution.setVariable("db_created", true);
+                execution.setVariable("return_database", returnJson);
             } catch (Exception e) {
                 execution.setVariable("db_created", false);
                 execution.setVariable("test_environment_created", false);

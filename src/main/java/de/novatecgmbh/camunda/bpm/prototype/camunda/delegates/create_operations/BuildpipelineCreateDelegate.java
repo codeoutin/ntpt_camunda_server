@@ -3,6 +3,7 @@ package de.novatecgmbh.camunda.bpm.prototype.camunda.delegates.create_operations
 import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
+import org.json.JSONArray;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -11,6 +12,10 @@ import java.util.List;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
+
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 
 /**
  * Creates Jenkins Jobs based on DMN Output. To create a job we always use the same template and just change the name
@@ -30,8 +35,11 @@ public class BuildpipelineCreateDelegate implements JavaDelegate {
                 //Collect the DMN Output in a new List
                 List<String> dmn_output = (List<String>) execution.getVariable("dmn_output");
                 int jobCount = 0;
-                while (jobCount < dmn_output.size()) {
+                // Create Return JSON
+                JsonArrayBuilder builder = Json.createArrayBuilder();
 
+
+                while (jobCount < dmn_output.size()) {
                     //Make URL to create a single Jenkins Job
                     String CreateJobUrl = "http://"
                             + jenkinsUrl
@@ -50,17 +58,30 @@ public class BuildpipelineCreateDelegate implements JavaDelegate {
                     HttpClient httpclient = new HttpClient();
                     int result = httpclient.executeMethod(post);
 
-                    System.out.println(jobCount + ". Created Jenkins Job for " + dmn_output.get(jobCount) + ". Http Status Code: " + result);
-                    jobCount++;
-//                    System.out.println("Response body: ");
-//                    System.out.println(post.getResponseBodyAsString());
+                    if(result / 100 == 2) {
+                        //Add to Return JSON
+                        builder.add(Json.createObjectBuilder()
+                                .add("id", jobCount)
+                                .add("value", dmn_output.get(jobCount))
+                        );
+
+                        System.out.println(jobCount + ". Created Jenkins Job for " + dmn_output.get(jobCount) + ". Http Status Code: " + result);
+                        jobCount++;
+                    } else {
+                        throw new Exception("Could not create Jenkins Job");
+                    }
                 }
+
+                //Finish Return JSON
+                JsonArray returnJson = builder.build();
+                System.out.println(returnJson.toString());
 
                 // Log to Console
                 System.out.println("Build Pipeline with " + jobCount + " Jobs created.");
 
                 // Set Process Variable for later checks
                 execution.setVariable("bp_created", true);
+                execution.setVariable("return_bp", returnJson.toString());
             } catch (Exception e) {
                 execution.setVariable("bp_created", false);
                 execution.setVariable("db_created", false);

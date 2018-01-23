@@ -62,7 +62,8 @@ public class ArtifactsDeleteDelegate implements JavaDelegate {
         //Destroy SonarQube Project
         if (sqCreated) {
             String sqUrl = "http://" + execution.getVariable("sonarqube_url");
-            dropSonarqubeProject(sqUrl, prefix);
+            String sqToken = (String) execution.getVariable("sonarqube_token");
+            dropSonarqubeProject(sqUrl, prefix, sqToken);
             execution.setVariable("sonarqube_created", false);
         }
     }
@@ -141,13 +142,13 @@ public class ArtifactsDeleteDelegate implements JavaDelegate {
      * @param url SonarQube URL
      * @param project SonarQube Project Name
      */
-    private void dropSonarqubeProject(String url, String project) {
+    private void dropSonarqubeProject(String url, String project, String userToken) {
         try {
             //Make URL to Delete a Project using SQ REST Api
             String deleteUrl = url+ "/api/projects/delete";
             String deleteParams  = "project="+project;
             byte[] deleteData = deleteParams.getBytes( StandardCharsets.UTF_8 );
-            String basicAuth = Base64.getEncoder().encodeToString(("admin:admin").getBytes(StandardCharsets.UTF_8));
+            String basicAuth = Base64.getEncoder().encodeToString((userToken+":").getBytes(StandardCharsets.UTF_8));
 
             //Delete the SQ Project
             HttpURLConnection delConn =  (HttpURLConnection) new URL(deleteUrl).openConnection();
