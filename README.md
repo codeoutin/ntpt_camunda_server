@@ -1,6 +1,10 @@
 # NT Prototype Server
-Prototype Camunda Server. Includes the process, process-engine, a dmn and a Rest Interface.
-The Server is written in SpringBoot and includes the Camunda Engine with BPMN and DMN Models.
+NTPT Prototype Server is a Camunda Server, with sample BPMN & DMN Models and Java Microservices Classes to maintain Software Components. Its surrounded with Spring Boot. You can run this Server standalone, but its recommended to setup the NTPT Environment
+* [NTPT Frontend](https://github.com/stegerpa/ntpt_frontend_react)
+* [NTPT Docker Containers](https://github.com/stegerpa/ntpt_docker_compose)
+
+<img width="200" alt="github_architecture" src="https://user-images.githubusercontent.com/18348827/35306966-c96738ca-00a0-11e8-8c0e-c8e3e097222d.png">
+
 
 ## Usage
 1. Build the jar using Maven
