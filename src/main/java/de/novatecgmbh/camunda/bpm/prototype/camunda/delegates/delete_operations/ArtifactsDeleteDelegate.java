@@ -6,6 +6,7 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.core.Response;
 import java.io.DataOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -74,18 +75,23 @@ public class ArtifactsDeleteDelegate implements JavaDelegate {
      * @param database Name of Database
      */
     private void dropDatabase(String url, String database) {
-        // Split URL into host + port
-        Pattern pattern = Pattern.compile("(https?://)([^:^/]*)(:\\d*)?(.*)?");
-        Matcher matcher = pattern.matcher(url);
-        matcher.find();
+        try {
+            // Split URL into host + port
+            Pattern pattern = Pattern.compile("(https?://)([^:^/]*)(:\\d*)?(.*)?");
+            Matcher matcher = pattern.matcher(url);
+            matcher.find();
 
-        String domain = matcher.group(2);
-        int port = Integer.parseInt(matcher.group(3).replaceAll("\\D+", ""));
+            String domain = matcher.group(2);
+            int port = Integer.parseInt(matcher.group(3).replaceAll("\\D+", ""));
 
-        // Connect to MongoDB Driver
-        MongoClient mongoClient = new MongoClient(domain, port);
-        mongoClient.dropDatabase(database);
-        System.out.println("###\nDB " + database + " deleted");
+            // Connect to MongoDB Driver
+            MongoClient mongoClient = new MongoClient(domain, port);
+            mongoClient.dropDatabase(database);
+            System.out.println("###\nDB " + database + " deleted");
+        } catch (Exception e) {
+            // Space for Exception Handling
+            System.out.println("Could not delete Database. Error: " + e.getMessage());
+        }
     }
 
     /**
@@ -106,11 +112,15 @@ public class ArtifactsDeleteDelegate implements JavaDelegate {
             deleteConn.setRequestProperty("Content-Length", Integer.toString(deleteUrl.getBytes().length ));
             System.out.println("Try to delete Docker Image...");
             deleteConn.connect();
-            System.out.println(deleteConn.getResponseMessage());
-            System.out.println("Container stopped & deleted. HTTP Response Code: " + deleteConn.getResponseCode());
+
+            // Check for Success => Response Code = 2xx Family
+            if(Response.Status.Family.familyOf(deleteConn.getResponseCode()) == Response.Status.Family.SUCCESSFUL) {
+                System.out.println(deleteConn.getResponseMessage());
+                System.out.println("Container stopped & deleted. HTTP Response Code: " + deleteConn.getResponseCode());
+            }
         } catch (Exception e) {
             // Space for Exception Handling
-            // throw new BpmnError("CreateError");
+            System.out.println("Could not delete Docker Container. Error: " + e.getMessage());
         }
     }
 
@@ -129,11 +139,14 @@ public class ArtifactsDeleteDelegate implements JavaDelegate {
             HttpURLConnection c =  (HttpURLConnection) new URL(CreateDeleteUrl).openConnection();
             c.setRequestMethod("POST");
 
-            System.out.println("###\nJenkins Job " + job + " deleted");
-            System.out.println("Message: " + c.getResponseMessage());
+            // Check for Success => Response Code = 2xx Family
+            if(Response.Status.Family.familyOf(c.getResponseCode()) == Response.Status.Family.SUCCESSFUL) {
+                System.out.println("###\nJenkins Job " + job + " deleted");
+                System.out.println("Message: " + c.getResponseMessage());
+            }
         } catch (Exception e) {
             // Space for Exception Handling
-            // throw new BpmnError("CreateError");
+            System.out.println("Could not delete Buildpipeline. Error: " + e.getMessage());
         }
     }
 
@@ -162,9 +175,16 @@ public class ArtifactsDeleteDelegate implements JavaDelegate {
             try(DataOutputStream d = new DataOutputStream(delConn.getOutputStream())) {
                 d.write( deleteData );
             }
-            System.out.println("SonarQube Profile deleted. Code " + delConn.getResponseCode());
+
+            // Check for Success => Response Code = 2xx Family
+            if(Response.Status.Family.familyOf(delConn.getResponseCode()) == Response.Status.Family.SUCCESSFUL) {
+                System.out.println("SonarQube Profile deleted.");
+            } else {
+                throw new Exception(delConn.getResponseCode() + " Error. Message: " + delConn.getResponseMessage());
+            }
         } catch (Exception e) {
             // Space for Exception Handling
+            System.out.println("Could not delete SonarQube Project. Error: " + e.getMessage());
         }
     }
 }

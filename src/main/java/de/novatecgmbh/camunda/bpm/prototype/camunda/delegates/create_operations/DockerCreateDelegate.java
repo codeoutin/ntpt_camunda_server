@@ -13,6 +13,7 @@ import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
+import javax.ws.rs.core.Response;
 import java.io.BufferedInputStream;
 import java.io.DataOutputStream;
 import java.io.InputStream;
@@ -76,8 +77,8 @@ public class DockerCreateDelegate implements JavaDelegate {
                 System.out.println("Try to pull Docker Image...");
                 pullConn.connect();
 
-                // If Image available go on
-                if(pullConn.getResponseCode() / 100 == 2) {
+                // Check for Success => Response Code = 2xx Family
+                if(Response.Status.Family.familyOf(pullConn.getResponseCode()) == Response.Status.Family.SUCCESSFUL) {
                     System.out.println(pullConn.getResponseMessage());
                     System.out.println("Image created. HTTP Response Code: " + pullConn.getResponseCode());
 
@@ -95,7 +96,9 @@ public class DockerCreateDelegate implements JavaDelegate {
                     try(DataOutputStream wr = new DataOutputStream(createConn.getOutputStream())) {
                         wr.write( createContainerJson.getBytes() );
                     }
-                    if(createConn.getResponseCode() / 100 == 2) {
+
+                    // Check for Success => Response Code = 2xx Family
+                    if(Response.Status.Family.familyOf(createConn.getResponseCode()) == Response.Status.Family.SUCCESSFUL) {
                         System.out.println(createConn.getResponseMessage());
                         System.out.println("Container created. HTTP Response Code: " + createConn.getResponseCode());
 
@@ -115,7 +118,9 @@ public class DockerCreateDelegate implements JavaDelegate {
                         startConn.setRequestProperty("Content-Length", Integer.toString(startUrl.getBytes().length ));
                         System.out.println("Try to start Docker Image...");
                         startConn.connect();
-                        if(startConn.getResponseCode() / 100 == 2) {
+
+                        // Check for Success => Response Code = 2xx Family
+                        if(Response.Status.Family.familyOf(startConn.getResponseCode()) == Response.Status.Family.SUCCESSFUL) {
                             System.out.println(startConn.getResponseMessage());
                             System.out.println("Container started. HTTP Response Code: " + startConn.getResponseCode());
 

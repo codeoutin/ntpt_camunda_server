@@ -9,12 +9,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.camunda.bpm.engine.delegate.JavaDelegate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.json.Json;
-import javax.xml.transform.sax.SAXSource;
+import javax.ws.rs.core.Response;
 
 /**
  * Create a new GitLab Branch based on an existing Branch in an existing Project
@@ -48,17 +51,21 @@ public class BranchCreateDelegate implements JavaDelegate {
                 c.setRequestMethod("POST");
                 c.setRequestProperty("PRIVATE-TOKEN", gitToken);
 
-                // Check for Success
-                if(c.getResponseCode() / 100 == 2) {
+                // Check for Success => Response Code = 2xx Family
+                if(Response.Status.Family.familyOf(c.getResponseCode()) == Response.Status.Family.SUCCESSFUL) {
                     // Log to Console
                     System.out.println("Git Branch Created. Response Message: " + c.getResponseMessage());
 
                     // Get Project Path
+                    String getProjectUrl = "http://" + gitUrl + "/api/v4/projects/" + gitProjectId; // GET Project Path URL
                     RestTemplate restTemplate = new RestTemplate();
-                    String getProjectUrl = "http://" + gitUrl + "/api/v4/projects/" + gitProjectId;
-                    ResponseEntity<String> response = restTemplate.getForEntity(getProjectUrl, String.class);
-                    JsonNode json = new ObjectMapper().readTree(response.getBody());
-                    String gitProjectPath = json.get("path_with_namespace").asText();
+                    HttpHeaders responseHeaders = new HttpHeaders();
+                    responseHeaders.set("PRIVATE-TOKEN", gitToken); // Add PRIVATE TOKEN to Request Header
+                    HttpEntity entity = new HttpEntity(responseHeaders);
+                    ResponseEntity<String> response = restTemplate.exchange( // Sends the Request
+                            getProjectUrl, HttpMethod.GET, entity, String.class);
+                    JsonNode json = new ObjectMapper().readTree(response.getBody()); // Parse Response Body
+                    String gitProjectPath = json.get("path_with_namespace").asText(); // Pick path from Body
 
                     // Create Return JSON
                     String createReturnJson = Json.createObjectBuilder()

@@ -6,6 +6,7 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Service;
 
 import javax.json.Json;
+import javax.ws.rs.core.Response;
 import java.io.DataOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -48,8 +49,8 @@ public class SonarQubeCreateDelegate implements JavaDelegate {
                     wr.write( createData );
                 }
 
-                //Check for Success
-                if(createConn.getResponseCode() / 100 == 2) {
+                // Check for Success => Response Code = 2xx Family
+                if(Response.Status.Family.familyOf(createConn.getResponseCode()) == Response.Status.Family.SUCCESSFUL) {
                     System.out.println("Profile created. HTTP Response Code: " + createConn.getResponseCode());
 
                     //Make URL to Associate a Project to a Quality Gate
@@ -71,7 +72,9 @@ public class SonarQubeCreateDelegate implements JavaDelegate {
                     try(DataOutputStream assignStream = new DataOutputStream(assignConn.getOutputStream())) {
                         assignStream.write( assignData );
                     }
-                    if(assignConn.getResponseCode() / 100 == 2) {
+
+                    // Check for Success => Response Code = 2xx Family
+                    if(Response.Status.Family.familyOf(assignConn.getResponseCode()) == Response.Status.Family.SUCCESSFUL) {
                         // Create Return JSON
                         String returnJson = Json.createObjectBuilder()
                                 .add("project_name", sqProjectName)

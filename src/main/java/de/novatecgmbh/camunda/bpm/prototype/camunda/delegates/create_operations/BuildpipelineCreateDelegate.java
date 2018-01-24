@@ -16,6 +16,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
+import javax.ws.rs.core.Response;
 
 /**
  * Creates Jenkins Jobs based on DMN Output. To create a job we always use the same template and just change the name
@@ -38,15 +39,15 @@ public class BuildpipelineCreateDelegate implements JavaDelegate {
                 // Create Return JSON
                 JsonArrayBuilder builder = Json.createArrayBuilder();
 
-
                 while (jobCount < dmn_output.size()) {
+                    //Set Job Name
+                    String jobName = prefix + "_" + dmn_output.get(jobCount);
+
                     //Make URL to create a single Jenkins Job
                     String CreateJobUrl = "http://"
                             + jenkinsUrl
                             + "/createItem?name="
-                            + prefix
-                            + "_"
-                            + dmn_output.get(jobCount);
+                            + jobName;
 
                     //Use config.xml as Template for the Job and post it to Jenkins REST-Api
                     File input = new File("src/main/resources/config.xml");
@@ -58,11 +59,13 @@ public class BuildpipelineCreateDelegate implements JavaDelegate {
                     HttpClient httpclient = new HttpClient();
                     int result = httpclient.executeMethod(post);
 
-                    if(result / 100 == 2) {
+                    // Check for Success => Response Code = 2xx Family
+                    if(Response.Status.Family.familyOf(result) == Response.Status.Family.SUCCESSFUL) {
                         //Add to Return JSON
                         builder.add(Json.createObjectBuilder()
                                 .add("id", jobCount)
                                 .add("value", dmn_output.get(jobCount))
+                                .add("path", "http://" + jenkinsUrl + "/job/" + jobName)
                         );
 
                         System.out.println(jobCount + ". Created Jenkins Job for " + dmn_output.get(jobCount) + ". Http Status Code: " + result);
@@ -72,16 +75,18 @@ public class BuildpipelineCreateDelegate implements JavaDelegate {
                     }
                 }
 
-                //Finish Return JSON
-                JsonArray returnJson = builder.build();
-                System.out.println(returnJson.toString());
+                if(jobCount > 0) {
+                    //Finish Return JSON
+                    JsonArray returnJson = builder.build();
+                    System.out.println(returnJson.toString());
 
-                // Log to Console
-                System.out.println("Build Pipeline with " + jobCount + " Jobs created.");
+                    // Log to Console
+                    System.out.println("Build Pipeline with " + jobCount + " Jobs created.");
 
-                // Set Process Variable for later checks
-                execution.setVariable("bp_created", true);
-                execution.setVariable("return_bp", returnJson.toString());
+                    // Set Process Variable for later checks
+                    execution.setVariable("bp_created", true);
+                    execution.setVariable("return_bp", returnJson.toString());
+                }
             } catch (Exception e) {
                 execution.setVariable("bp_created", false);
                 execution.setVariable("db_created", false);

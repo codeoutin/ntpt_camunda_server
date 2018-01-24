@@ -3,6 +3,8 @@ package de.novatecgmbh.camunda.bpm.prototype.camunda.delegates.delete_operations
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Service;
+
+import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -37,8 +39,11 @@ public class BranchDeleteDelegate implements JavaDelegate {
             c.setRequestMethod("DELETE");
             c.setRequestProperty("PRIVATE-TOKEN", gitToken);
 
-            System.out.println("Git Delete Branch Message: " + c.getResponseMessage());
-            execution.setVariable("git_branch_created", false);
+            // Check for Success => Response Code = 2xx Family
+            if(Response.Status.Family.familyOf(c.getResponseCode()) == Response.Status.Family.SUCCESSFUL) {
+                System.out.println("Git Delete Branch Message: " + c.getResponseMessage());
+                execution.setVariable("git_branch_created", false);
+            }
         } else {
             System.out.println("Could not delete Branch, please contact an Administrator");
         }
