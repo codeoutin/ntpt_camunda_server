@@ -1,5 +1,5 @@
 # NTPT Server Component
-NTPT Prototype Server is a Camunda Server, with sample BPMN & DMN Models and Java Microservices Classes to maintain Software Components. Its surrounded with Spring Boot. You can run this Server standalone, but its recommended to setup the NTPT Environment
+This project is part of my Bachelor Thesis project NTPT. It's a Camunda Server, with sample BPMN & DMN Models and Java Microservices Classes to maintain Software Components. Its surrounded with Spring Boot. You can run this Server standalone, but I recommended to use it together with the other parts of the NTPT project:
 * [NTPT Frontend](https://github.com/stegerpa/ntpt_frontend_react)
 * [NTPT Docker Containers](https://github.com/stegerpa/ntpt_docker_compose)
 
